@@ -1,0 +1,129 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="4040" height="1960" viewBox="0 0 4040 1960" font-family="Inter, 'Segoe UI', Roboto, Arial, sans-serif">
+<defs><marker id="s" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M1 1 L11 6 L1 11" fill="none" stroke="#5D6B65" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<rect width="4040" height="1960" fill="#FFFFFF"/>
+<text x="120" y="110" font-size="56" font-weight="700" fill="#1C2421">Como funcionam os principais arquivos do projeto</text>
+<text x="120" y="166" font-size="28" fill="#5D6B65">Cada bloco é um arquivo do repositório · os números seguem o caminho de uma pergunta</text>
+<path d="M 728 805 L 912 805" fill="none" stroke="#5D6B65" stroke-width="4.5" stroke-linejoin="round" marker-start="url(#s)" marker-end="url(#s)"/>
+<path d="M 1528 805 L 1712 805" fill="none" stroke="#5D6B65" stroke-width="4.5" stroke-linejoin="round" marker-end="url(#s)"/>
+<path d="M 2328 805 L 2512 805" fill="none" stroke="#5D6B65" stroke-width="4.5" stroke-linejoin="round" marker-end="url(#s)"/>
+<path d="M 3128 805 L 3312 805" fill="none" stroke="#5D6B65" stroke-width="4.5" stroke-linejoin="round" marker-start="url(#s)" marker-end="url(#s)"/>
+<path d="M 2020 978 L 2020 1162" fill="none" stroke="#5D6B65" stroke-width="4.5" stroke-linejoin="round" marker-end="url(#s)"/>
+<path d="M 2020 632 L 2020 468" fill="none" stroke="#5D6B65" stroke-width="4.5" stroke-linejoin="round" marker-start="url(#s)" marker-end="url(#s)"/>
+<path d="M 3620 1162 L 3620 978" fill="none" stroke="#5D6B65" stroke-width="4.5" stroke-linejoin="round" marker-end="url(#s)"/>
+<rect x="1720" y="230" width="600" height="230" rx="26" fill="#E8F0FE" stroke="#3B5FC4" stroke-width="4"/>
+<text x="1754" y="290" font-family="'Cascadia Mono', Consolas, 'Courier New', monospace" font-size="33" font-weight="700" fill="#3B5FC4">OpenAI API</text>
+<text x="1754" y="332" font-size="25" font-weight="600" fill="#1C2421">Serviço externo de IA</text>
+<line x1="1754" y1="354" x2="2286" y2="354" stroke="#3B5FC4" stroke-opacity="0.3" stroke-width="2"/>
+<circle cx="1762" cy="390" r="5" fill="#3B5FC4"/>
+<text x="1780" y="398" font-size="23" fill="#1C2421">gpt-4o-mini: raciocina e responde</text>
+<circle cx="1762" cy="432" r="5" fill="#3B5FC4"/>
+<text x="1780" y="440" font-size="23" fill="#1C2421">text-embedding-3-small: vetores</text>
+<rect x="120" y="640" width="600" height="330" rx="26" fill="#FFFFFF" stroke="#5D6B65" stroke-width="4"/>
+<text x="154" y="700" font-family="'Cascadia Mono', Consolas, 'Courier New', monospace" font-size="33" font-weight="700" fill="#5D6B65">index.html</text>
+<text x="154" y="742" font-size="25" font-weight="600" fill="#1C2421">Interface web do aluno</text>
+<line x1="154" y1="764" x2="686" y2="764" stroke="#5D6B65" stroke-opacity="0.3" stroke-width="2"/>
+<circle cx="162" cy="800" r="5" fill="#5D6B65"/>
+<text x="180" y="808" font-size="23" fill="#1C2421">Envia a pergunta ao servidor</text>
+<circle cx="162" cy="842" r="5" fill="#5D6B65"/>
+<text x="180" y="850" font-size="23" fill="#1C2421">Mostra resposta, fontes e passos</text>
+<circle cx="162" cy="884" r="5" fill="#5D6B65"/>
+<text x="180" y="892" font-size="23" fill="#1C2421">Exibe o custo de cada pergunta</text>
+<rect x="920" y="640" width="600" height="330" rx="26" fill="#FFFFFF" stroke="#5D6B65" stroke-width="4"/>
+<text x="954" y="700" font-family="'Cascadia Mono', Consolas, 'Courier New', monospace" font-size="33" font-weight="700" fill="#5D6B65">api.py</text>
+<text x="954" y="742" font-size="25" font-weight="600" fill="#1C2421">Servidor (FastAPI)</text>
+<line x1="954" y1="764" x2="1486" y2="764" stroke="#5D6B65" stroke-opacity="0.3" stroke-width="2"/>
+<circle cx="962" cy="800" r="5" fill="#5D6B65"/>
+<text x="980" y="808" font-size="23" fill="#1C2421">Recebe POST /api/chat</text>
+<circle cx="962" cy="842" r="5" fill="#5D6B65"/>
+<text x="980" y="850" font-size="23" fill="#1C2421">Na subida: indexa PDFs e cria o agente</text>
+<circle cx="962" cy="884" r="5" fill="#5D6B65"/>
+<text x="980" y="892" font-size="23" fill="#1C2421">Devolve a resposta em JSON</text>
+<rect x="1720" y="640" width="600" height="330" rx="26" fill="#E6F2EA" stroke="#1B7F3B" stroke-width="4"/>
+<text x="1754" y="700" font-family="'Cascadia Mono', Consolas, 'Courier New', monospace" font-size="33" font-weight="700" fill="#1B7F3B">agent.py</text>
+<text x="1754" y="742" font-size="25" font-weight="600" fill="#1C2421">Cérebro: agente ReAct</text>
+<line x1="1754" y1="764" x2="2286" y2="764" stroke="#1B7F3B" stroke-opacity="0.3" stroke-width="2"/>
+<circle cx="1762" cy="800" r="5" fill="#1B7F3B"/>
+<text x="1780" y="808" font-size="23" fill="#1C2421">Ciclo Pensar → Agir → Observar</text>
+<circle cx="1762" cy="842" r="5" fill="#1B7F3B"/>
+<text x="1780" y="850" font-size="23" fill="#1C2421">Memória da conversa (InMemorySaver)</text>
+<circle cx="1762" cy="884" r="5" fill="#1B7F3B"/>
+<text x="1780" y="892" font-size="23" fill="#1C2421">Valida a resposta e calcula o custo</text>
+<rect x="2520" y="640" width="600" height="330" rx="26" fill="#E6F2EA" stroke="#1B7F3B" stroke-width="4"/>
+<text x="2554" y="700" font-family="'Cascadia Mono', Consolas, 'Courier New', monospace" font-size="33" font-weight="700" fill="#1B7F3B">tools.py</text>
+<text x="2554" y="742" font-size="25" font-weight="600" fill="#1C2421">Ferramenta de busca</text>
+<line x1="2554" y1="764" x2="3086" y2="764" stroke="#1B7F3B" stroke-opacity="0.3" stroke-width="2"/>
+<circle cx="2562" cy="800" r="5" fill="#1B7F3B"/>
+<text x="2580" y="808" font-size="23" fill="#1C2421">buscar_normas_ifpa()</text>
+<circle cx="2562" cy="842" r="5" fill="#1B7F3B"/>
+<text x="2580" y="850" font-size="23" fill="#1C2421">Busca por significado + palavra-chave</text>
+<circle cx="2562" cy="884" r="5" fill="#1B7F3B"/>
+<text x="2580" y="892" font-size="23" fill="#1C2421">Devolve trechos com fonte e página</text>
+<rect x="3320" y="640" width="600" height="330" rx="26" fill="#FFF4E0" stroke="#9A6200" stroke-width="4"/>
+<text x="3354" y="700" font-family="'Cascadia Mono', Consolas, 'Courier New', monospace" font-size="33" font-weight="700" fill="#9A6200">ChromaDB</text>
+<text x="3354" y="742" font-size="25" font-weight="600" fill="#1C2421">Banco vetorial</text>
+<line x1="3354" y1="764" x2="3886" y2="764" stroke="#9A6200" stroke-opacity="0.3" stroke-width="2"/>
+<circle cx="3362" cy="800" r="5" fill="#9A6200"/>
+<text x="3380" y="808" font-size="23" fill="#1C2421">Trechos dos documentos do IFPA</text>
+<circle cx="3362" cy="842" r="5" fill="#9A6200"/>
+<text x="3380" y="850" font-size="23" fill="#1C2421">Vetores (embeddings) de cada trecho</text>
+<circle cx="3362" cy="884" r="5" fill="#9A6200"/>
+<text x="3380" y="892" font-size="23" fill="#1C2421">Pasta chroma_db/</text>
+<rect x="1720" y="1170" width="600" height="300" rx="26" fill="#FDECEA" stroke="#B42318" stroke-width="4"/>
+<text x="1754" y="1230" font-family="'Cascadia Mono', Consolas, 'Courier New', monospace" font-size="33" font-weight="700" fill="#B42318">guardrails.py</text>
+<text x="1754" y="1272" font-size="25" font-weight="600" fill="#1C2421">Blindagem (segurança)</text>
+<line x1="1754" y1="1294" x2="2286" y2="1294" stroke="#B42318" stroke-opacity="0.3" stroke-width="2"/>
+<circle cx="1762" cy="1330" r="5" fill="#B42318"/>
+<text x="1780" y="1338" font-size="23" fill="#1C2421">Bloqueia prompt injection e abuso</text>
+<circle cx="1762" cy="1372" r="5" fill="#B42318"/>
+<text x="1780" y="1380" font-size="23" fill="#1C2421">Confere citações e artigos citados</text>
+<circle cx="1762" cy="1414" r="5" fill="#B42318"/>
+<text x="1780" y="1422" font-size="23" fill="#1C2421">Limita perguntas por minuto</text>
+<rect x="3320" y="1170" width="600" height="300" rx="26" fill="#E8F0FE" stroke="#3B5FC4" stroke-width="4"/>
+<text x="3354" y="1230" font-family="'Cascadia Mono', Consolas, 'Courier New', monospace" font-size="33" font-weight="700" fill="#3B5FC4">ingest.py</text>
+<text x="3354" y="1272" font-size="25" font-weight="600" fill="#1C2421">Preparação dos PDFs</text>
+<line x1="3354" y1="1294" x2="3886" y2="1294" stroke="#3B5FC4" stroke-opacity="0.3" stroke-width="2"/>
+<circle cx="3362" cy="1330" r="5" fill="#3B5FC4"/>
+<text x="3380" y="1338" font-size="23" fill="#1C2421">Lê os PDFs (PyPDFLoader)</text>
+<circle cx="3362" cy="1372" r="5" fill="#3B5FC4"/>
+<text x="3380" y="1380" font-size="23" fill="#1C2421">Divide em trechos por artigo</text>
+<circle cx="3362" cy="1414" r="5" fill="#3B5FC4"/>
+<text x="3380" y="1422" font-size="23" fill="#1C2421">Gera vetores e grava no ChromaDB</text>
+<circle cx="820" cy="759" r="22" fill="#1C2421"/>
+<text x="820" y="767" font-size="22" font-weight="700" fill="#FFFFFF" text-anchor="middle">1</text>
+<circle cx="820" cy="851" r="22" fill="#1C2421"/>
+<text x="820" y="859" font-size="22" font-weight="700" fill="#FFFFFF" text-anchor="middle">7</text>
+<circle cx="1620" cy="759" r="22" fill="#1C2421"/>
+<text x="1620" y="767" font-size="22" font-weight="700" fill="#FFFFFF" text-anchor="middle">2</text>
+<circle cx="2420" cy="759" r="22" fill="#1C2421"/>
+<text x="2420" y="767" font-size="22" font-weight="700" fill="#FFFFFF" text-anchor="middle">5</text>
+<circle cx="3220" cy="759" r="22" fill="#1C2421"/>
+<text x="3220" y="767" font-size="22" font-weight="700" fill="#FFFFFF" text-anchor="middle">6</text>
+<circle cx="2066" cy="1070" r="22" fill="#1C2421"/>
+<text x="2066" y="1078" font-size="22" font-weight="700" fill="#FFFFFF" text-anchor="middle">3</text>
+<circle cx="2066" cy="550" r="22" fill="#1C2421"/>
+<text x="2066" y="558" font-size="22" font-weight="700" fill="#FFFFFF" text-anchor="middle">4</text>
+<text x="3650" y="1079" font-size="24" font-weight="600" fill="#5D6B65">grava (na subida)</text>
+<rect x="120" y="1580" width="3800" height="300" rx="26" fill="#F7F8F7" stroke="#DDE3DF" stroke-width="3"/>
+<text x="164" y="1642" font-size="31" font-weight="700" fill="#1C2421">Caminho de uma pergunta</text>
+<circle cx="190" cy="1697" r="18" fill="#1C2421"/>
+<text x="190" y="1705" font-size="19" font-weight="700" fill="#FFFFFF" text-anchor="middle">1</text>
+<text x="224" y="1705" font-size="24" fill="#1C2421">index.html envia a pergunta para api.py</text>
+<circle cx="190" cy="1747" r="18" fill="#1C2421"/>
+<text x="190" y="1755" font-size="19" font-weight="700" fill="#FFFFFF" text-anchor="middle">2</text>
+<text x="224" y="1755" font-size="24" fill="#1C2421">api.py repassa a pergunta para agent.py</text>
+<circle cx="190" cy="1797" r="18" fill="#1C2421"/>
+<text x="190" y="1805" font-size="19" font-weight="700" fill="#FFFFFF" text-anchor="middle">3</text>
+<text x="224" y="1805" font-size="24" fill="#1C2421">guardrails.py verifica a pergunta (e, no fim, as citações)</text>
+<circle cx="190" cy="1847" r="18" fill="#1C2421"/>
+<text x="190" y="1855" font-size="19" font-weight="700" fill="#FFFFFF" text-anchor="middle">4</text>
+<text x="224" y="1855" font-size="24" fill="#1C2421">gpt-4o-mini pensa e decide buscar nos documentos</text>
+<circle cx="1690" cy="1697" r="18" fill="#1C2421"/>
+<text x="1690" y="1705" font-size="19" font-weight="700" fill="#FFFFFF" text-anchor="middle">5</text>
+<text x="1724" y="1705" font-size="24" fill="#1C2421">agent.py chama a ferramenta de busca em tools.py</text>
+<circle cx="1690" cy="1747" r="18" fill="#1C2421"/>
+<text x="1690" y="1755" font-size="19" font-weight="700" fill="#FFFFFF" text-anchor="middle">6</text>
+<text x="1724" y="1755" font-size="24" fill="#1C2421">tools.py busca os trechos relevantes no ChromaDB</text>
+<circle cx="1690" cy="1797" r="18" fill="#1C2421"/>
+<text x="1690" y="1805" font-size="19" font-weight="700" fill="#FFFFFF" text-anchor="middle">7</text>
+<text x="1724" y="1805" font-size="24" fill="#1C2421">api.py devolve a resposta com fontes e custo</text>
+</svg>
