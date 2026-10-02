@@ -6,13 +6,16 @@ Railway:  uvicorn app.api:app --host 0.0.0.0 --port $PORT  (ver Dockerfile)
 
 from __future__ import annotations
 
+import io
 import logging
 from contextlib import asynccontextmanager
+from functools import lru_cache
 from pathlib import Path
 
+import segno
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.concurrency import run_in_threadpool
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.responses import FileResponse, JSONResponse, Response
 
 from app.agent import construir_agente, perguntar
 from app.config import BASE_DIR, settings
@@ -63,6 +66,32 @@ async def chat(dados: PerguntaIn, request: Request) -> RespostaOut:
         raise HTTPException(503, "O assistente ainda está inicializando ou mal configurado.")
     # O agente é síncrono; rodar em threadpool evita travar o event loop.
     return await run_in_threadpool(perguntar, dados.pergunta, dados.sessao_id)
+
+
+def url_publica(request: Request) -> str:
+    """URL que os alunos devem abrir (QR code). Prioriza a configurada no ambiente."""
+    if settings.public_url:
+        return settings.public_url.rstrip("/")
+    proto = request.headers.get("x-forwarded-proto", request.url.scheme)
+    host = request.headers.get("x-forwarded-host", request.headers.get("host", request.url.netloc))
+    return f"{proto}://{host}"
+
+
+@lru_cache(maxsize=8)
+def _qr_svg(url: str) -> bytes:
+    buf = io.BytesIO()
+    segno.make(url, error="m").save(buf, kind="svg", scale=8, border=2, dark="#111111", light="#ffffff", xmldecl=False)
+    return buf.getvalue()
+
+
+@app.get("/api/info")
+def info(request: Request):
+    return {"url": url_publica(request), "modelo": settings.chat_model, "cotacao_usd_brl": settings.usd_brl}
+
+
+@app.get("/qr.svg")
+def qr_code(request: Request):
+    return Response(_qr_svg(url_publica(request)), media_type="image/svg+xml", headers={"Cache-Control": "public, max-age=3600"})
 
 
 @app.get("/")

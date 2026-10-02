@@ -51,6 +51,7 @@ class Settings:
 
     # --- Recuperação ---
     top_k: int = _int("RETRIEVER_TOP_K", 4)
+    bm25_k: int = _int("BM25_TOP_K", 3)
     # Distância de cosseno máxima aceita (0 = idêntico, 2 = oposto).
     # Trechos acima desse limiar são descartados como "sem evidência".
     max_distance: float = _float("RETRIEVER_MAX_DISTANCE", 0.75)
@@ -61,6 +62,15 @@ class Settings:
     # --- Blindagem de entrada ---
     max_question_chars: int = _int("MAX_QUESTION_CHARS", 1000)
     rate_limit_per_minute: int = _int("RATE_LIMIT_PER_MINUTE", 15)
+
+    # --- Custos exibidos ao usuário ---
+    # Cotação usada só para exibir o custo em reais (ajuste no painel de variáveis).
+    usd_brl: float = _float("USD_BRL", 5.40)
+
+    # --- URL pública (QR code). No Railway, RAILWAY_PUBLIC_DOMAIN é injetada automaticamente ---
+    public_url: str = os.getenv("PUBLIC_URL", "") or (
+        f"https://{os.environ['RAILWAY_PUBLIC_DOMAIN']}" if os.getenv("RAILWAY_PUBLIC_DOMAIN") else ""
+    )
 
     # --- Caminhos ---
     pdf_dir: Path = Path(os.getenv("PDF_DIR", BASE_DIR / "data" / "pdfs"))

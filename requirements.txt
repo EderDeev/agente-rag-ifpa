@@ -10,13 +10,16 @@ langgraph>=1.0,<2.0
 # --- RAG: ingestão e banco vetorial ---
 chromadb>=1.0
 pypdf>=5.0
+rank_bm25>=0.2.2   # busca lexical (híbrida com a vetorial)
 fonttools>=4.50  # decodifica fontes CFF do Guia Acadêmico
 
 # --- Saída estruturada / tolerância a falhas ---
 pydantic>=2.7
 json-repair>=0.30
+tiktoken>=0.7      # contagem de tokens para o custo de embedding
 
 # --- API web ---
 fastapi>=0.115
 uvicorn[standard]>=0.30
 python-dotenv>=1.0
+segno>=1.6         # QR code da página

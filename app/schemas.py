@@ -36,6 +36,20 @@ class PassoReAct(BaseModel):
     ferramenta: str | None = None
 
 
+class Custo(BaseModel):
+    """Custo de API gerado por uma pergunta (todas as chamadas do ciclo ReAct)."""
+
+    modelo: str
+    chamadas_llm: int = 0
+    tokens_entrada: int = 0
+    tokens_entrada_cache: int = 0
+    tokens_saida: int = 0
+    tokens_embedding: int = 0
+    custo_usd: float = 0.0
+    custo_brl: float = 0.0
+    cotacao_usd_brl: float
+
+
 class PerguntaIn(BaseModel):
     pergunta: str = Field(..., min_length=1)
     sessao_id: str = Field(..., min_length=8, max_length=64, pattern=r"^[A-Za-z0-9_-]+$")
@@ -45,3 +59,4 @@ class RespostaOut(RespostaAgente):
     sessao_id: str
     passos: list[PassoReAct] = Field(default_factory=list)
     avisos: list[str] = Field(default_factory=list)
+    custo: Custo | None = None

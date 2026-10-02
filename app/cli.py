@@ -30,6 +30,7 @@ def main() -> None:
         construir_indice()
 
     sessao = uuid.uuid4().hex
+    total_usd = 0.0
     print(f"{NEGRITO}Assistente Acadêmico IFPA{RESET} — sessão {sessao[:8]} (digite 'sair' para encerrar)\n")
 
     while True:
@@ -55,6 +56,14 @@ def main() -> None:
             print(f"  • {c.documento}, p. {c.pagina}: \"{c.trecho}\"")
         for a in r.avisos:
             print(f"  {VERMELHO}⚠ {a}{RESET}")
+        if r.custo:
+            c = r.custo
+            total_usd += c.custo_usd
+            print(
+                f"\033[90m  💲 Custo: US$ {c.custo_usd:.6f} (R$ {c.custo_brl:.4f}) | {c.modelo} × {c.chamadas_llm} | "
+                f"{c.tokens_entrada} in · {c.tokens_saida} out · {c.tokens_embedding} emb | "
+                f"sessão: US$ {total_usd:.6f}{RESET}"
+            )
         print()
 
 

@@ -20,7 +20,22 @@
   * { box-sizing: border-box; }
   body { margin: 0; background: var(--bg); color: var(--ink);
          font: 15px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
-  .wrap { max-width: 860px; margin: 0 auto; padding: 0 16px; display: flex; flex-direction: column; height: 100dvh; }
+  .layout { max-width: 1180px; margin: 0 auto; padding: 0 16px; display: grid; grid-template-columns: minmax(0, 1fr) 260px; gap: 24px; }
+  .wrap { display: flex; flex-direction: column; height: 100dvh; min-width: 0; }
+  aside { padding: 18px 0; display: flex; flex-direction: column; gap: 16px; }
+  .painel { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 16px; }
+  .painel h2 { font-size: 13px; margin: 0 0 10px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: .04em; }
+  .qr img { display: block; width: 100%; max-width: 220px; margin: 0 auto; border-radius: 8px; background: #fff; }
+  .qr p { margin: 10px 0 0; font-size: 12px; color: var(--muted); text-align: center; overflow-wrap: anywhere; }
+  .qr a { color: var(--brand); }
+  .total { font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .total small { display: block; font-size: 12px; font-weight: 400; color: var(--muted); }
+  .custo { margin-top: 10px; padding: 8px 10px; border-radius: 8px; background: var(--bg); font-size: 12px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 4px 14px; font-variant-numeric: tabular-nums; }
+  .custo b { color: var(--ink); }
+  @media (max-width: 900px) {
+    .layout { grid-template-columns: 1fr; }
+    aside { display: none; }
+  }
   header { padding: 18px 0 12px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center; gap: 12px; }
   header h1 { font-size: 18px; margin: 0; }
   header p { margin: 2px 0 0; color: var(--muted); font-size: 13px; }
@@ -53,6 +68,7 @@
 </style>
 </head>
 <body>
+<div class="layout">
 <div class="wrap">
   <header>
     <div>
@@ -64,7 +80,7 @@
 
   <main id="chat" aria-live="polite">
     <div class="msg bot">
-      <div class="txt">Olá! Tiro dúvidas sobre o Regulamento Didático-Pedagógico, o PPC de Ciência da Computação, o Guia Acadêmico e o Calendário Acadêmico. Toda resposta vem com a fonte citada.</div>
+      <div class="txt">Olá! Tiro dúvidas sobre o Regulamento Didático-Pedagógico (Resolução nº 945/2023), o PPC de Ciência da Computação e o Guia Acadêmico 2025. Toda resposta vem com a fonte citada e o custo da consulta.</div>
       <div class="sugs" style="margin-top:10px">
         <button>Qual a frequência mínima para ser aprovado?</button>
         <button>Como é calculada a média final na graduação?</button>
@@ -78,6 +94,19 @@
     <textarea id="q" placeholder="Digite sua dúvida acadêmica..." maxlength="1000" required></textarea>
     <button id="b" type="submit">Enviar</button>
   </form>
+</div>
+
+<aside aria-label="Acesso e custos">
+  <div class="painel qr">
+    <h2>Acesse pelo celular</h2>
+    <img src="/qr.svg" alt="QR code para abrir o Assistente Acadêmico IFPA" width="220" height="220">
+    <p>Aponte a câmera ou acesse<br><a id="url" href="/">carregando...</a></p>
+  </div>
+  <div class="painel">
+    <h2>Custo desta sessão</h2>
+    <div class="total" id="total">US$ 0,000000<small id="total-brl">R$ 0,0000 · 0 perguntas</small></div>
+  </div>
+</aside>
 </div>
 
 <script>
@@ -102,6 +131,20 @@ function el(tag, cls, text) {
   return e;
 }
 
+const fmt = (n) => Number(n || 0).toLocaleString('pt-BR');
+const usd = (v) => 'US$ ' + Number(v || 0).toLocaleString('pt-BR', { minimumFractionDigits: 6, maximumFractionDigits: 6 });
+const brl = (v) => 'R$ ' + Number(v || 0).toLocaleString('pt-BR', { minimumFractionDigits: 4, maximumFractionDigits: 4 });
+const sessaoCusto = { usd: 0, brl: 0, n: 0 };
+function acumular(c) {
+  sessaoCusto.usd += c.custo_usd; sessaoCusto.brl += c.custo_brl; sessaoCusto.n += 1;
+  pintarTotal();
+}
+function pintarTotal() {
+  const t = document.getElementById('total');
+  t.firstChild.textContent = usd(sessaoCusto.usd);
+  document.getElementById('total-brl').textContent = brl(sessaoCusto.brl) + ' · ' + sessaoCusto.n + ' pergunta(s)';
+}
+
 function renderResposta(r) {
   const box = el('div', 'msg bot');
   const meta = el('div', 'meta');
@@ -120,6 +163,17 @@ function renderResposta(r) {
     box.append(ul);
   }
   if (r.avisos && r.avisos.length) box.append(el('div', 'avisos', '⚠ ' + r.avisos.join(' ')));
+
+  if (r.custo) {
+    const c = r.custo;
+    const div = el('div', 'custo');
+    const item = (rotulo, valor) => { const s = el('span'); s.append(rotulo + ' ', el('b', '', valor)); div.append(s); };
+    item('Custo da pergunta:', usd(c.custo_usd) + ' (' + brl(c.custo_brl) + ')');
+    item('Modelo:', c.modelo + ' × ' + c.chamadas_llm + ' chamada(s)');
+    item('Tokens:', fmt(c.tokens_entrada) + ' entrada' + (c.tokens_entrada_cache ? ' (' + fmt(c.tokens_entrada_cache) + ' em cache)' : '') + ' · ' + fmt(c.tokens_saida) + ' saída · ' + fmt(c.tokens_embedding) + ' embedding');
+    box.append(div);
+    acumular(c);
+  }
 
   if (r.passos && r.passos.length) {
     const det = el('details');
@@ -175,8 +229,14 @@ q.addEventListener('keydown', (e) => {
   if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); form.requestSubmit(); }
 });
 document.querySelectorAll('.sugs button').forEach(b => b.addEventListener('click', () => enviar(b.textContent)));
+fetch('/api/info').then(r => r.json()).then(i => {
+  const a = document.getElementById('url');
+  a.href = i.url; a.textContent = i.url.replace(/^https?:\/\//, '');
+}).catch(() => {});
+
 document.getElementById('nova').addEventListener('click', () => {
   sessao = novaSessao();
+  sessaoCusto.usd = 0; sessaoCusto.brl = 0; sessaoCusto.n = 0; pintarTotal();
   chat.querySelectorAll('.msg').forEach((m, i) => { if (i > 0) m.remove(); });
 });
 </script>

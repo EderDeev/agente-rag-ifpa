@@ -14,7 +14,7 @@ As normas acadêmicas do IFPA estão distribuídas em documentos extensos (o RDP
 
 O sistema tem dois pipelines desacoplados:
 
-**Indexação (offline).** `PyPDFLoader` extrai o texto de 241 páginas de três documentos oficiais (Resolução CONSUP nº 945/2023, PPC v8 e Guia Acadêmico 2025). O texto é normalizado (hifenização, espaços), fatiado pelo `RecursiveCharacterTextSplitter` em 553 chunks, vetorizado com `text-embedding-3-small` (1536 dimensões) e persistido no ChromaDB local com métrica de cosseno. Cada chunk recebe um ID determinístico (hash de arquivo + página + posição), de modo que reindexar não duplica vetores.
+**Indexação (offline).** `PyPDFLoader` extrai o texto de 241 páginas de três documentos oficiais (Resolução CONSUP nº 945/2023, PPC v8 e Guia Acadêmico 2025). O texto de cada documento é normalizado (hifenização, espaços), concatenado (para não cortar artigos na virada de página) e fatiado pelo `RecursiveCharacterTextSplitter` em 480 chunks, cada um com a página (calculada pelo offset) e o artigo a que pertence; vetorizado com `text-embedding-3-small` (1536 dimensões) e persistido no ChromaDB local com métrica de cosseno. Cada chunk recebe um ID determinístico (hash de arquivo + página + posição), de modo que reindexar não duplica vetores.
 
 **Consulta (online).** O agente é criado com `create_agent` do LangChain v1, que compila um grafo LangGraph implementando o ciclo ReAct: o modelo (`gpt-4o-mini`) produz um *Thought*, decide uma *Action* (chamada de ferramenta), recebe a *Observation* e repete até ter evidência suficiente para a resposta final. A memória de sessão é um `InMemorySaver` (checkpointer do LangGraph) indexado por `thread_id = sessao_id`, o que permite perguntas de acompanhamento ("e a partir de qual semestre?"). Um middleware (`wrap_model_call`) limita o histórico enviado ao modelo a 6 mil tokens, sem apagar a conversa salva.
 
@@ -33,16 +33,16 @@ A docstring funciona como **contrato** com o modelo: descreve quando usar a ferr
 
 Adotamos `chunk_size = 1200` caracteres (~300 tokens) e `chunk_overlap = 200` (~17 %), com separadores hierárquicos da redação normativa (`TÍTULO`, `CAPÍTULO`, `Seção`, `Art.`, `§`) antes dos separadores genéricos. Justificativas:
 
-- **Contexto:** a unidade de sentido de uma norma é o artigo com seus parágrafos, que tipicamente ocupa 600–1200 caracteres. 120 chunks começam exatamente em "Art.", preservando caput e parágrafos juntos.
-- **Custo:** com `top_k = 4`, cada busca injeta no máximo ~1.200 tokens no prompt (≈ US$ 0,00018 no gpt-4o-mini). A indexação completa custa ≈ US$ 0,002 e uma pergunta completa, ≈ US$ 0,001.
+- **Contexto:** a unidade de sentido de uma norma é o artigo com seus parágrafos, que tipicamente ocupa 600–1200 caracteres. 164 chunks começam exatamente em "Art." e 376 são rotulados com seu artigo; trechos que começam no meio de um artigo recebem o prefixo "(continuação do Art. N)". Na primeira versão (fatiamento por página) o agente atribuiu números de artigo errados a parágrafos soltos; o rótulo eliminou o problema.
+- **Custo:** com `top_k = 4` (+3 do BM25), cada busca injeta ~1.200–2.000 tokens no prompt (≈ US$ 0,0003 no gpt-4o-mini). A indexação completa custa ≈ US$ 0,002 e, medido, uma pergunta completa custa de US$ 0,0006 a 0,0018 — valor exibido ao usuário após cada resposta.
 - **Precisão do embedding:** chunks grandes misturam vários artigos e "diluem" o vetor; chunks pequenos separam a regra de suas exceções.
 - **Overlap moderado:** garante que um parágrafo cortado na fronteira apareça íntegro em algum chunk, sem inflar o índice como um overlap de 50 % faria.
 
 ## 5. Mitigação de alucinações
 
 1. **Ancoragem obrigatória:** o system prompt define os trechos recuperados como fonte única e exige busca antes de qualquer resposta normativa.
-2. **Limiar de relevância:** trechos com distância de cosseno acima de 0,75 são descartados; sem evidência, a ferramenta retorna `SEM_EVIDENCIA` e o agente declara que não encontrou a informação, orientando a procurar a Secretaria Acadêmica.
-3. **Citação verificável:** a resposta final é um JSON com `citacoes` (documento, página, trecho). Após o json-repair e a validação Pydantic, cada citação é conferida contra as observações reais do turno; citações não recuperadas são removidas e a confiança é rebaixada.
+2. **Busca híbrida e limiar de relevância:** o BM25 complementa a busca vetorial com termos exatos (no teste, foi o que trouxe o Art. 88, "vedado o abono de faltas"); trechos com distância de cosseno acima de 0,75 são descartados; sem evidência, a ferramenta retorna `SEM_EVIDENCIA` e o agente declara que não encontrou a informação, orientando a procurar a Secretaria Acadêmica.
+3. **Citação verificável:** a resposta final é um JSON com `citacoes` (documento, página, trecho). Após o json-repair e a validação Pydantic, cada citação é conferida contra as observações reais da sessão e todo número de artigo mencionado no texto precisa constar dos trechos recuperados; o que não confere é removido ou sinalizado e a confiança é rebaixada.
 4. **Temperatura 0** e limite de 12 passos no grafo.
 5. **Escopo e injeção:** filtro de entrada para padrões de prompt injection, recusa de temas fora do escopo e instrução de tratar o conteúdo recuperado como dado, não como ordem.
 
@@ -54,4 +54,4 @@ Exceções da OpenAI (autenticação, cota, timeout, conexão) e de recursão do
 
 _[Inserir prints da demonstração: pergunta normativa com citação, pergunta de acompanhamento, pergunta sem evidência, tentativa de injeção bloqueada.]_
 
-Próximos passos: incluir o Calendário Acadêmico 2026 e a Resolução nº 944/2023 (RDP da graduação); busca híbrida (BM25 + vetorial) para termos exatos como números de artigo; reranking; memória persistente em banco (SqliteSaver/PostgresSaver); avaliação automática com um conjunto de perguntas-gabarito.
+Próximos passos: incluir o Calendário Acadêmico 2026 e a Resolução nº 944/2023 (RDP da graduação); reranking com cross-encoder; memória persistente em banco (SqliteSaver/PostgresSaver); avaliação automática com um conjunto de perguntas-gabarito.

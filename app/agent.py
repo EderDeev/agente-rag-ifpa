@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import json
 import logging
+import re
 from functools import lru_cache
 from typing import Callable
 
@@ -25,6 +26,7 @@ from langgraph.errors import GraphRecursionError
 from pydantic import ValidationError
 
 from app.config import exigir_chave_api, settings
+from app.custos import calcular_custo
 from app.guardrails import citacao_foi_recuperada, validar_pergunta
 from app.prompts import SYSTEM_PROMPT
 from app.schemas import PassoReAct, RespostaAgente, RespostaOut
@@ -141,8 +143,15 @@ def interpretar_resposta_final(texto: str) -> tuple[RespostaAgente, list[str]]:
         return RespostaAgente(resposta=texto.strip() or "(sem resposta)", confianca="baixa"), avisos
 
 
+RE_ARTIGO_CITADO = re.compile(r"\b(?:Art\.?|artigo)\s*(\d+)", re.IGNORECASE)
+
+
 def verificar_citacoes(resp: RespostaAgente, observacoes: list[str]) -> list[str]:
-    """Guardrail de saída: remove citações que não vieram da busca vetorial."""
+    """Guardrail de saída: só aceita fontes e artigos que vieram da busca.
+
+    `observacoes` são TODOS os retornos de ferramenta da sessão, para que uma
+    pergunta de acompanhamento possa reaproveitar evidência já recuperada.
+    """
     avisos: list[str] = []
     verificadas = [c for c in resp.citacoes if citacao_foi_recuperada(c.documento, c.pagina, observacoes)]
     removidas = len(resp.citacoes) - len(verificadas)
@@ -150,15 +159,24 @@ def verificar_citacoes(resp: RespostaAgente, observacoes: list[str]) -> list[str
         avisos.append(f"{removidas} citação(ões) descartada(s) por não corresponder(em) aos trechos recuperados.")
     resp.citacoes = verificadas
 
-    if resp.status == "respondida":
-        if not observacoes:
-            resp.confianca = "baixa"
-            avisos.append("Resposta gerada sem consulta à base documental.")
-        elif not verificadas:
-            resp.confianca = "baixa"
-            avisos.append("Nenhuma citação verificável: confira a informação na Secretaria Acadêmica.")
-    else:
+    if resp.status != "respondida":
         resp.citacoes = []
+        return avisos
+
+    if not observacoes:
+        resp.confianca = "baixa"
+        avisos.append("Resposta gerada sem consulta à base documental.")
+    elif not verificadas:
+        resp.confianca = "baixa"
+        avisos.append("Nenhuma citação verificável: confira a informação na Secretaria Acadêmica.")
+
+    # Números de artigo mencionados no texto precisam existir nos trechos recuperados.
+    recuperados = {int(n) for obs in observacoes for n in RE_ARTIGO_CITADO.findall(obs)}
+    inventados = sorted({int(n) for n in RE_ARTIGO_CITADO.findall(resp.resposta)} - recuperados)
+    if inventados:
+        resp.confianca = "baixa"
+        lista = ", ".join(f"Art. {n}" for n in inventados)
+        avisos.append(f"{lista} não aparece(m) nos trechos consultados; trate essa referência com cautela.")
     return avisos
 
 
@@ -204,13 +222,20 @@ def perguntar(pergunta: str, sessao_id: str) -> RespostaOut:
         return _erro(sessao_id, "Ocorreu um erro interno ao processar sua pergunta.")
 
     turno = _mensagens_do_turno(estado["messages"])
-    passos, observacoes = extrair_passos(turno)
+    passos, _ = extrair_passos(turno)
+    observacoes_sessao = [_texto(m) for m in estado["messages"] if isinstance(m, ToolMessage)]
     final = next((m for m in reversed(turno) if isinstance(m, AIMessage) and not m.tool_calls), None)
 
     resp, avisos = interpretar_resposta_final(_texto(final) if final else "")
-    avisos += verificar_citacoes(resp, observacoes)
+    avisos += verificar_citacoes(resp, observacoes_sessao)
+    custo = calcular_custo(turno)
+    log.info(
+        "[%s] CUSTO %d chamadas | %d in (%d cache) | %d out | %d emb | US$ %.6f",
+        sessao_id, custo.chamadas_llm, custo.tokens_entrada, custo.tokens_entrada_cache,
+        custo.tokens_saida, custo.tokens_embedding, custo.custo_usd,
+    )
 
     for p in passos:
         log.info("[%s] %-11s %s", sessao_id, p.tipo.upper(), p.conteudo.replace("\n", " ")[:200])
 
-    return RespostaOut(sessao_id=sessao_id, passos=passos, avisos=avisos, **resp.model_dump())
+    return RespostaOut(sessao_id=sessao_id, passos=passos, avisos=avisos, custo=custo, **resp.model_dump())

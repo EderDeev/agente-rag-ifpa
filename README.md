@@ -47,9 +47,10 @@ app/
   agent.py       agente ReAct, memória, saída estruturada
   guardrails.py  regras de blindagem
   schemas.py     modelos Pydantic
+  custos.py      custo de API por pergunta (FinOps)
   api.py         FastAPI + healthcheck
   cli.py         modo terminal (plano B local)
-static/index.html  interface web com o log Thought/Action/Observation
+static/index.html  interface web: log Thought/Action/Observation, custo por pergunta e QR code
 data/pdfs/         documentos oficiais do IFPA
 docs/relatorio_tecnico.md
 Dockerfile · railway.json · requirements.txt · .env.example
@@ -74,8 +75,9 @@ Para incluir novos documentos (ex.: Calendário Acadêmico 2026 ou a Resolução
 | Raciocínio / respostas | `gpt-4o-mini` | US$ 0,15 / 1M tokens entrada · US$ 0,60 / 1M saída |
 | Embeddings | `text-embedding-3-small` | US$ 0,02 / 1M tokens |
 
-- **Indexação completa**: ~110 mil tokens → **≈ US$ 0,002** (uma vez por deploy).
-- **Por pergunta**: ~2 chamadas ao LLM (decidir a busca + responder), ~4–6 mil tokens de entrada e ~400 de saída → **≈ US$ 0,001**. Ou seja, ~1.000 perguntas por US$ 1.
+- **Indexação completa**: ~116 mil tokens → **≈ US$ 0,002** (uma vez por deploy).
+- **Por pergunta (medido)**: 1 a 3 chamadas ao LLM, 6–16 mil tokens de entrada (boa parte em cache da OpenAI, cobrada pela metade) e 120–400 de saída → **US$ 0,0006 a 0,0018**. Ou seja, ~550 a 1.700 perguntas por US$ 1.
+- **Custo exibido em tempo real**: cada resposta mostra o custo de API daquela pergunta (tokens de entrada/cache/saída somados de todas as chamadas do ciclo ReAct + tokens de embedding da busca), em US$ e R$, e a interface acumula o total da sessão (`app/custos.py`). A cotação usada para reais é a variável `USD_BRL` (padrão 5,40).
 - O modelo é trocável sem mexer no código pela variável `OPENAI_MODEL` (ex.: `gpt-4.1-nano` para ainda mais economia, `gpt-4.1-mini` para mais qualidade).
 - Controles de custo no código: `temperature=0`, `max_tokens=900`, `top_k=4`, histórico enviado ao modelo limitado a 6 mil tokens (middleware `aparar_historico`), `recursion_limit=12` e rate limit de 15 perguntas/min por IP.
 
@@ -85,11 +87,13 @@ Para incluir novos documentos (ex.: Calendário Acadêmico 2026 ou a Resolução
 
 `chunk_size = 1200` caracteres · `chunk_overlap = 200` caracteres · separadores normativos.
 
-1. **Unidade semântica = artigo.** Os documentos normativos são organizados em Títulos › Capítulos › Seções › Artigos › Parágrafos. Os separadores priorizam `\nTÍTULO`, `\nCAPÍTULO`, `\nSeção`, `\nArt.`, `\n§` antes de quebras genéricas. Na base atual, 120 dos 553 chunks começam exatamente em "Art.", o que permite citações precisas ("Art. 88, § 1º").
+1. **Unidade semântica = artigo.** Os documentos normativos são organizados em Títulos › Capítulos › Seções › Artigos › Parágrafos. Os separadores priorizam `\nTÍTULO`, `\nCAPÍTULO`, `\nSeção`, `\nArt.`, `\n§` antes de quebras genéricas. Na base atual, 164 dos 480 chunks começam exatamente em "Art." e 376 estão rotulados com o artigo a que pertencem, o que permite citações precisas ("Art. 88, § 1º").
 2. **1200 caracteres ≈ 300 tokens.** A maioria dos artigos com seus parágrafos cabe em 600–1200 caracteres. Chunks menores (ex.: 500) cortariam o caput do seu § 1º; chunks maiores (ex.: 3000) misturariam vários artigos, diluindo o embedding e enviando texto irrelevante ao LLM.
 3. **Custo por consulta previsível.** Com `top_k = 4`, cada busca injeta no máximo ~1.200 tokens de contexto (4 × 300) — cerca de US$ 0,00018 no gpt-4o-mini. Dobrar o chunk dobraria esse custo sem ganho de precisão.
 4. **Overlap de ~17 % (200 caracteres).** Suficiente para que um parágrafo cortado na fronteira apareça inteiro em pelo menos um dos chunks, sem inflar o índice (overlap de 50 % aumentaria em ~40 % o número de vetores e os custos de embedding e armazenamento).
-5. **Fatiamento por página.** Cada chunk carrega `fonte` e `pagina`, permitindo citar a página exata do PDF.
+5. **Fatiamento do documento inteiro, não por página.** Fatiar página a página cortava artigos na virada de página (ex.: o § 2º ficava separado do caput). O texto completo de cada PDF é fatiado e a página de cada chunk é calculada pelo offset (`start_index`), permitindo citar a página exata.
+6. **Rótulo de artigo.** Cada chunk recebe `metadata["artigo"]` (último "Art. N" antes do seu início) e, se começar no meio de um artigo, o prefixo `(continuação do Art. N)`. Isso impede que o modelo "chute" o número do artigo de um parágrafo solto.
+7. **Busca híbrida.** A busca vetorial (top 4, com limiar) decide se há evidência; o BM25 (top 3) complementa com trechos que contêm os termos exatos ("abono", "trancamento"), que embeddings às vezes deixam escapar.
 
 ---
 
@@ -102,8 +106,8 @@ Para incluir novos documentos (ex.: Calendário Acadêmico 2026 ou a Resolução
 | 1 | **Entrada** | Normalização Unicode, remoção de caracteres invisíveis, limite de 1000 caracteres e detecção de padrões de prompt injection/jailbreak (pt-BR e inglês) → status `bloqueada` (`guardrails.validar_pergunta`) |
 | 2 | **Tráfego** | Rate limit de 15 req/min por IP protege a cota da API (`guardrails.LimitadorDeTaxa`) |
 | 3 | **System prompt** | Fonte única = documentos recuperados; busca obrigatória antes de responder; citação de documento e página; proibido inventar artigos, números ou datas; recusa fora de escopo; trechos recuperados tratados como dados, não ordens; não revela instruções (`prompts.py`) |
-| 4 | **Recuperação** | Limiar de distância de cosseno (`0.75`). Sem trechos relevantes, a tool retorna `SEM_EVIDENCIA` e o agente responde "não encontrei nos documentos oficiais" (`tools.py`) |
-| 5 | **Saída** | JSON reparado (json-repair) e validado (Pydantic). Toda citação é conferida contra os trechos efetivamente recuperados; citações inventadas são descartadas e a confiança é rebaixada (`agent.verificar_citacoes`) |
+| 4 | **Recuperação** | Busca híbrida (vetorial + BM25) com limiar de distância de cosseno (`0.75`). Sem trechos relevantes, a tool retorna `SEM_EVIDENCIA` e o agente responde "não encontrei nos documentos oficiais" (`tools.py`) |
+| 5 | **Saída** | JSON reparado (json-repair) e validado (Pydantic). Toda citação (documento + página) é conferida contra os trechos recuperados na sessão, e todo "Art. N" mencionado no texto precisa constar desses trechos; o que não confere é descartado ou sinalizado e a confiança é rebaixada (`agent.verificar_citacoes`) |
 
 ### 4.2 Blindagem do Estudante (desacoplamento técnico — seção 3 do roteiro)
 
@@ -153,6 +157,7 @@ docker run --env-file .env -p 8000:8000 agente-ifpa
 2. Em **Variables**, adicione `OPENAI_API_KEY` (opcional: `OPENAI_MODEL`).
 3. Em **Settings → Networking**, clique em **Generate Domain**.
 4. Na primeira subida o índice é construído automaticamente (~30 s, ≈ US$ 0,002).
+5. A interface exibe um **QR code** com o endereço público (variável `RAILWAY_PUBLIC_DOMAIN`, injetada pelo Railway; pode ser sobrescrita com `PUBLIC_URL`) para os alunos abrirem no celular. A imagem também fica em `/qr.svg`, pronta para projetar ou imprimir.
 
 > O disco do Railway é efêmero: o índice é recriado a cada deploy. A memória de sessão (`InMemorySaver`) é zerada quando o serviço reinicia — comportamento esperado para memória de sessão.
 
@@ -178,13 +183,14 @@ Resposta:
     { "tipo": "action", "ferramenta": "buscar_normas_ifpa", "conteudo": "buscar_normas_ifpa(consulta=\"frequência mínima exigida para aprovação\")" },
     { "tipo": "observation", "ferramenta": "buscar_normas_ifpa", "conteudo": "[1] Resolução CONSUP nº 945/2023 ... | página 29 ..." }
   ],
-  "avisos": []
+  "avisos": [],
+  "custo": { "modelo": "gpt-4o-mini", "chamadas_llm": 2, "tokens_entrada": 6921, "tokens_entrada_cache": 1536, "tokens_saida": 346, "tokens_embedding": 25, "custo_usd": 0.001131, "custo_brl": 0.006107, "cotacao_usd_brl": 5.4 }
 }
 ```
 
 `status`: `respondida` · `sem_evidencia` · `fora_do_escopo` · `bloqueada` · `erro`.
 
-`GET /health` → `200 {"status":"ok"}` quando o agente está pronto.
+`GET /health` → `200 {"status":"ok"}` quando o agente está pronto. · `GET /qr.svg` → QR code da aplicação. · `GET /api/info` → URL pública e modelo.
 
 ## 8. Roteiro sugerido para a demonstração (pitch)
 
