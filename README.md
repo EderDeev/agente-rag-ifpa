@@ -128,7 +128,7 @@ A nuvem nunca é dependência da inteligência do agente: o índice ChromaDB é 
 
 ## 5. Como executar localmente
 
-Pré-requisitos: Python 3.11+ (testado com 3.12–3.14) e uma chave da OpenAI.
+Pré-requisitos: Python 3.11+ e uma chave da OpenAI.
 
 ```bash
 python -m venv .venv
