@@ -1,0 +1,19 @@
+# Segredos
+.env
+.env.*
+!.env.example
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# Índice vetorial (gerado a partir dos PDFs)
+chroma_db/
+
+# SO / editores
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
