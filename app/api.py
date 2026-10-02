@@ -94,6 +94,21 @@ def qr_code(request: Request):
     return Response(_qr_svg(url_publica(request)), media_type="image/svg+xml", headers={"Cache-Control": "public, max-age=3600"})
 
 
+ICONES = {
+    "favicon.ico": "image/x-icon",
+    "favicon.svg": "image/svg+xml",
+    "apple-touch-icon.png": "image/png",
+    "icon-512.png": "image/png",
+}
+
+
+@app.get("/{nome}", include_in_schema=False)
+def icone(nome: str):
+    if nome not in ICONES:
+        raise HTTPException(404)
+    return FileResponse(STATIC / nome, media_type=ICONES[nome], headers={"Cache-Control": "public, max-age=86400"})
+
+
 @app.get("/")
 def index():
     return FileResponse(Path(STATIC / "index.html"))
