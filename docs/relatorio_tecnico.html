@@ -27,7 +27,6 @@
   th, td { border: 1px solid #000; padding: 3pt 4pt; text-align: left; vertical-align: top; }
   th { font-weight: bold; text-align: center; }
   code { font-family: "Courier New", monospace; font-size: 10.5pt; }
-  .refs p { text-indent: 0; text-align: left; line-height: 1.0; margin: 0 0 6pt; }
 </style>
 </head>
 <body>
@@ -48,7 +47,7 @@
 </div>
 
 <h2>1 Detalhamento da arquitetura do agente</h2>
-<p>O assistente combina a Geração Aumentada por Recuperação (RAG), que injeta no contexto do modelo trechos recuperados de uma base externa (LEWIS et al., 2020), com um agente no paradigma ReAct, que intercala raciocínio, ação e observação (YAO et al., 2023). A arquitetura (Figura 1) tem dois fluxos. Na <b>preparação</b>, os documentos oficiais (Resolução CONSUP nº 945/2023, PPC e Guia Acadêmico 2025) são lidos pelo <code>PyPDFLoader</code>, fatiados, vetorizados com o <code>text-embedding-3-small</code> e armazenados no ChromaDB. Na <b>consulta</b>, a pergunta chega a uma API FastAPI no Railway, passa pela camada de segurança e é entregue ao agente.</p>
+<p>O assistente combina a Geração Aumentada por Recuperação (RAG), que injeta no contexto do modelo trechos recuperados de uma base externa, com um agente no paradigma ReAct, que intercala raciocínio, ação e observação. A arquitetura (Figura 1) tem dois fluxos. Na <b>preparação</b>, os documentos oficiais (Resolução CONSUP nº 945/2023, PPC e Guia Acadêmico 2025) são lidos pelo <code>PyPDFLoader</code>, fatiados, vetorizados com o <code>text-embedding-3-small</code> e armazenados no ChromaDB. Na <b>consulta</b>, a pergunta chega a uma API FastAPI no Railway, passa pela camada de segurança e é entregue ao agente.</p>
 <div class="ilustracao">
   <p class="tit-ilu">Figura 1 – Arquitetura do agente</p>
   <img src="arquitetura.png" alt="Arquitetura do agente em blocos">
@@ -67,14 +66,14 @@
   </table>
   <p class="fonte">Fonte: elaborado pelos autores (2026).</p>
 </div>
-<p>O parâmetro <code>pensamento</code> torna o <i>Thought</i> explícito e auditável no log, pois modelos com chamada nativa de ferramentas costumam omitir o raciocínio textual. Internamente, a busca é híbrida: a busca vetorial no ChromaDB (4 trechos, distância de cosseno) decide se há evidência, e o índice lexical BM25 (ROBERTSON; ZARAGOZA, 2009), com 3 trechos, complementa com termos exatos, como "abono" ou "trancamento".</p>
+<p>O parâmetro <code>pensamento</code> torna o <i>Thought</i> explícito e auditável no log, pois modelos com chamada nativa de ferramentas costumam omitir o raciocínio textual. Internamente, a busca é híbrida: a busca vetorial no ChromaDB (4 trechos, distância de cosseno) decide se há evidência, e o índice lexical BM25, com 3 trechos, complementa com termos exatos, como "abono" ou "trancamento".</p>
 
 <h2>3 Estratégia de fatiamento dos PDFs</h2>
 <p>O texto é fatiado pelo <code>RecursiveCharacterTextSplitter</code> com <code>chunk_size</code> de 1200 caracteres (cerca de 300 tokens) e <code>chunk_overlap</code> de 200 caracteres (cerca de 17%). Os separadores priorizam a hierarquia das normas — TÍTULO, CAPÍTULO, Seção, Art. e § — antes das quebras genéricas de parágrafo, linha e frase. Quanto ao contexto, a unidade de sentido de uma norma é o artigo com seus parágrafos (em geral de 600 a 1200 caracteres): trechos menores separariam a regra de suas exceções, e maiores misturariam artigos, diluindo o vetor. Quanto ao custo (FinOps), cada busca injeta no máximo cerca de 2.000 tokens, e a indexação completa (~116 mil tokens) custa cerca de US$ 0,002.</p>
 <p>A primeira versão fatiava por página, cortando artigos e levando o agente a atribuir números de artigo errados a parágrafos isolados. Na versão final, o documento é fatiado inteiro, a página de cada trecho é calculada pelo deslocamento no texto e os trechos que começam no meio de um artigo recebem o prefixo "(continuação do Art. N)". O resultado são 480 trechos, dos quais 164 começam exatamente em "Art." e 376 estão rotulados com o artigo a que pertencem.</p>
 
 <h2>4 Justificativa da mitigação de alucinações</h2>
-<p>Modelos de linguagem podem gerar conteúdo fluente, porém sem sustentação nas fontes (JI et al., 2023). Como o roteiro exige que toda resposta sobre normas seja ancorada nos documentos oficiais, a mitigação foi organizada em cinco camadas complementares (Quadro 2).</p>
+<p>Modelos de linguagem podem gerar conteúdo fluente, porém sem sustentação nas fontes. Como o roteiro exige que toda resposta sobre normas seja ancorada nos documentos oficiais, a mitigação foi organizada em cinco camadas complementares (Quadro 2).</p>
 
 <div class="ilustracao">
   <p class="tit-ilu">Quadro 2 – Camadas de mitigação de alucinações</p>
@@ -89,17 +88,6 @@
   <p class="fonte">Fonte: elaborado pelos autores (2026).</p>
 </div>
 <p>Nos testes em produção, o agente citou corretamente o Art. 88 da Resolução nº 945/2023 (frequência mínima de 75%, vedado o abono de faltas), admitiu não encontrar o valor da bolsa de monitoria, ausente da base, e bloqueou a tentativa de <i>prompt injection</i> sem custo de API.</p>
-
-<h2 style="text-align: center;">Referências</h2>
-<div class="refs">
-<p>INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARÁ. <b>Guia Acadêmico 2025</b>. Belém: IFPA, 2025.</p>
-<p>INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARÁ. <b>Projeto Pedagógico do Curso de Bacharelado em Ciência da Computação</b>. Ananindeua: IFPA, Campus Ananindeua.</p>
-<p>INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARÁ. <b>Resolução CONSUP nº 945/2023</b>: Regulamento Didático-Pedagógico do Ensino. Belém: IFPA, 2023.</p>
-<p>JI, Z. et al. Survey of hallucination in natural language generation. <b>ACM Computing Surveys</b>, New York, v. 55, n. 12, p. 1-38, 2023.</p>
-<p>LEWIS, P. et al. Retrieval-augmented generation for knowledge-intensive NLP tasks. <b>Advances in Neural Information Processing Systems</b>, [<i>s. l.</i>], v. 33, p. 9459-9474, 2020.</p>
-<p>ROBERTSON, S.; ZARAGOZA, H. The probabilistic relevance framework: BM25 and beyond. <b>Foundations and Trends in Information Retrieval</b>, Hanover, v. 3, n. 4, p. 333-389, 2009.</p>
-<p>YAO, S. et al. ReAct: synergizing reasoning and acting in language models. <i>In</i>: INTERNATIONAL CONFERENCE ON LEARNING REPRESENTATIONS, 11., 2023, Kigali. <b>Proceedings</b> [...]. [<i>S. l.</i>]: ICLR, 2023.</p>
-</div>
 
 </body>
 </html>
