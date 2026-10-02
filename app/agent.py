@@ -29,7 +29,7 @@ from app.config import exigir_chave_api, settings
 from app.custos import calcular_custo
 from app.guardrails import citacao_foi_recuperada, validar_pergunta
 from app.prompts import SYSTEM_PROMPT
-from app.schemas import PassoReAct, RespostaAgente, RespostaOut
+from app.schemas import Custo, PassoReAct, RespostaAgente, RespostaOut
 from app.tools import FERRAMENTAS
 
 log = logging.getLogger("agente")
@@ -185,7 +185,9 @@ def verificar_citacoes(resp: RespostaAgente, observacoes: list[str]) -> list[str
 # ---------------------------------------------------------------------------
 
 def _erro(sessao_id: str, mensagem: str, status: str = "erro") -> RespostaOut:
-    return RespostaOut(sessao_id=sessao_id, resposta=mensagem, status=status, confianca="baixa")
+    # Sem custo calculável: bloqueios da blindagem acontecem antes de qualquer chamada à API.
+    custo = Custo(modelo=settings.chat_model, cotacao_usd_brl=settings.usd_brl)
+    return RespostaOut(sessao_id=sessao_id, resposta=mensagem, status=status, confianca="baixa", custo=custo)
 
 
 def perguntar(pergunta: str, sessao_id: str) -> RespostaOut:
