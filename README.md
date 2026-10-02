@@ -52,7 +52,7 @@ app/
   cli.py         modo terminal (plano B local)
 static/index.html  interface web: log Thought/Action/Observation, custo por pergunta e QR code
 data/pdfs/         documentos oficiais do IFPA
-docs/relatorio_tecnico.md
+docs/relatorio_tecnico.html (fonte) e docs/Relatorio_Tecnico_Agente_RAG_IFPA.pdf
 Dockerfile · railway.json · requirements.txt · .env.example
 ```
 
