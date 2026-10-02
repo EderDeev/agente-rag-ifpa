@@ -2,98 +2,92 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<title>Relatório Técnico-Científico — Assistente Acadêmico IFPA</title>
+<title>Assistente Acadêmico IFPA: um Agente RAG com Raciocínio ReAct</title>
 <style>
-  @page { size: A4; margin: 14mm 15mm 14mm 15mm; }
+  /* Formato de artigo SBC: A4, margens superior 3,5 cm, inferior 2,5 cm, laterais 3 cm; Times 12; espaçamento simples */
+  @page { size: A4; margin: 3.5cm 3cm 2.5cm 3cm; }
   * { box-sizing: border-box; }
-  body { font-family: "Segoe UI", Inter, Roboto, Arial, sans-serif; font-size: 9.6pt; line-height: 1.42; color: #1c2421; margin: 0; }
-  h1 { font-size: 15.5pt; margin: 0 0 2px; color: #14532d; }
-  h2 { break-after: avoid; font-size: 11pt; margin: 11px 0 4px; color: #14532d; border-bottom: 1.5px solid #cfe3d6; padding-bottom: 2px; }
-  p { margin: 0 0 5px; text-align: justify; }
-  .sub { color: #5d6b65; font-size: 9pt; margin-bottom: 2px; }
-  .meta { font-size: 8.6pt; color: #3d4a44; border: 1px solid #dde3df; border-radius: 6px; padding: 5px 9px; margin: 6px 0 4px; display: grid; grid-template-columns: 1fr 1fr; gap: 1px 14px; }
-  .meta b { color: #1c2421; }
-  figure { margin: 6px 0 4px; }
-  figure img { width: 100%; border: 1px solid #dde3df; border-radius: 4px; }
-  figcaption { font-size: 8.2pt; color: #5d6b65; text-align: center; margin-top: 2px; }
-  table { width: 100%; border-collapse: collapse; font-size: 8.5pt; margin: 4px 0 6px; }
-  th, td { border: 1px solid #dde3df; padding: 3px 5px; vertical-align: top; text-align: left; }
-  th { background: #eef5f0; font-weight: 600; }
-  code { font-family: Consolas, "Cascadia Mono", monospace; font-size: 8.4pt; background: #f2f4f3; padding: 0 3px; border-radius: 3px; }
-  ul, ol { margin: 2px 0 6px 16px; padding: 0; }
-  li { margin: 1px 0; }
-  .nobreak { break-inside: avoid; }
-  .ref { font-size: 8.2pt; color: #3d4a44; }
+  body { font-family: "Times New Roman", Times, serif; font-size: 12pt; line-height: 1.08; color: #000; margin: 0; }
+  .titulo { font-size: 16pt; font-weight: bold; text-align: center; margin: 0 0 12pt; line-height: 1.2; }
+  .autores { font-size: 12pt; font-weight: bold; text-align: center; margin: 0 0 6pt; }
+  .afiliacao { font-size: 12pt; text-align: center; margin: 0 0 2pt; }
+  .email { font-family: "Courier New", monospace; font-size: 10pt; text-align: center; margin: 0 0 12pt; }
+  .resumo { font-style: italic; text-align: justify; margin: 0 0.8cm 6pt; text-indent: 0; }
+  .resumo b { font-style: normal; }
+  h2 { font-size: 13pt; font-weight: bold; margin: 12pt 0 4pt; break-after: avoid; }
+  h3 { font-size: 12pt; font-weight: bold; margin: 8pt 0 3pt; break-after: avoid; }
+  p { margin: 0 0 6pt; text-align: justify; text-indent: 1.27cm; }
+  p.sem { text-indent: 0; }
+  figure { margin: 6pt 0 8pt; break-inside: avoid; }
+  figure img { width: 100%; }
+  .legenda { font-size: 10pt; font-weight: bold; text-align: center; margin: 3pt 0 0; text-indent: 0; }
+  .legenda-tab { font-size: 10pt; font-weight: bold; text-align: center; margin: 6pt 0 3pt; text-indent: 0; break-after: avoid; }
+  table { width: 100%; border-collapse: collapse; font-size: 10pt; margin: 0 0 8pt; break-inside: avoid; }
+  th, td { border-top: 1px solid #000; border-bottom: 1px solid #000; padding: 2pt 4pt; text-align: left; vertical-align: top; }
+  th { font-weight: bold; border-top: 1.5px solid #000; }
+  tr:last-child td { border-bottom: 1.5px solid #000; }
+  code { font-family: "Courier New", monospace; font-size: 10.5pt; }
+  .refs p { text-indent: 0; text-align: left; font-size: 10.5pt; margin: 0 0 3pt; }
 </style>
 </head>
 <body>
 
-<h1>Assistente Acadêmico IFPA: Agente RAG com Raciocínio ReAct</h1>
-<div class="sub">Relatório Técnico-Científico — Miniprojeto 1: O Cérebro da IA · Tópicos Avançados em Computação I · Bacharelado em Ciência da Computação · IFPA Campus Ananindeua · Outubro de 2026</div>
-<div class="meta">
-  <div><b>Equipe:</b> [Nome 1 (líder)], [Nome 2], [Nome 3], [Nome 4]</div>
-  <div><b>Código:</b> github.com/EderDeev/agente-rag-ifpa</div>
-  <div><b>Aplicação:</b> agente-rag-ifpa-production.up.railway.app</div>
-  <div><b>Stack:</b> LangChain 1.4 · LangGraph · ChromaDB · OpenAI · FastAPI</div>
-</div>
+<div class="titulo">Assistente Acadêmico IFPA: um Agente RAG com Raciocínio ReAct para Consulta a Normas Institucionais</div>
+<div class="autores">[Nome do Integrante 1], [Nome do Integrante 2], [Nome do Integrante 3], [Nome do Integrante 4]</div>
+<div class="afiliacao">Bacharelado em Ciência da Computação – Instituto Federal do Pará (IFPA), Campus Ananindeua<br>Ananindeua – PA – Brasil</div>
+<div class="email">{integrante1, integrante2, integrante3, integrante4}@email.com</div>
 
-<h2>1. Problema e solução</h2>
-<p>As normas acadêmicas do IFPA estão distribuídas em documentos extensos: a Resolução CONSUP nº 945/2023 (Regulamento Didático-Pedagógico, 98 páginas), o PPC do Bacharelado em Ciência da Computação (108 páginas) e o Guia Acadêmico 2025 (35 páginas). Localizar uma regra específica — frequência mínima, critérios de aprovação, carga horária de estágio — é lento e sujeito a interpretações equivocadas. Desenvolvemos um assistente virtual que responde em linguagem natural <b>somente com base nesses documentos oficiais</b>, citando documento e página de cada afirmação, e que admite quando a informação não existe na base, em vez de inventar.</p>
+<p class="resumo"><b>Abstract.</b> This paper presents a virtual assistant that answers academic questions using only the official documents of the Federal Institute of Pará (IFPA). The system combines a Retrieval-Augmented Generation (RAG) pipeline, built with ChromaDB and OpenAI embeddings, with a ReAct agent orchestrated by LangChain/LangGraph. A legal-aware chunking strategy, hybrid retrieval and five guardrail layers reduce hallucinations. In production tests, the agent cited the correct articles, refused out-of-scope questions and cost about US$ 0.001 per question.</p>
+<p class="resumo"><b>Resumo.</b> Este trabalho apresenta um assistente virtual que responde dúvidas acadêmicas utilizando apenas os documentos oficiais do Instituto Federal do Pará (IFPA). O sistema combina um pipeline de Geração Aumentada por Recuperação (RAG), construído com ChromaDB e embeddings da OpenAI, a um agente ReAct orquestrado com LangChain/LangGraph. Uma estratégia de fatiamento orientada à estrutura normativa, a busca híbrida e cinco camadas de blindagem reduzem alucinações. Em testes no ambiente de produção, o agente citou os artigos corretos, recusou perguntas fora do escopo e custou cerca de US$ 0,001 por pergunta.</p>
+<p class="resumo"><b>Palavras-chave:</b> RAG; agente ReAct; LangChain; mitigação de alucinações; FinOps.</p>
 
-<h2>2. Arquitetura do agente</h2>
-<figure class="nobreak">
-  <img src="arquitetura.png" alt="Diagrama da arquitetura do agente">
-  <figcaption>Figura 1 — Arquitetura em blocos. Linha superior: caminho de cada pergunta. Linha inferior: dados, preparação e infraestrutura.</figcaption>
+<h2>1. Introdução</h2>
+<p>As normas acadêmicas do IFPA estão distribuídas em documentos extensos, como a Resolução CONSUP nº 945/2023 (Regulamento Didático-Pedagógico, 98 páginas), o Projeto Pedagógico do Curso (PPC) de Ciência da Computação (108 páginas) e o Guia Acadêmico 2025 (35 páginas). Localizar uma regra específica nesses documentos é moroso e sujeito a interpretações equivocadas. Modelos de linguagem respondem em linguagem natural, mas tendem a alucinar, isto é, gerar conteúdo fluente não sustentado por fontes [Ji et al. 2023].</p>
+<p>Para ancorar as respostas nos documentos oficiais, adotamos a Geração Aumentada por Recuperação (RAG), que injeta no contexto do modelo trechos recuperados de uma base externa [Lewis et al. 2020], e o paradigma ReAct, no qual o modelo intercala raciocínio (<i>Thought</i>), ação (<i>Action</i>) e observação (<i>Observation</i>) [Yao et al. 2023]. O objetivo é um assistente que cite documento e página de cada afirmação e admita quando a informação não existe na base.</p>
+
+<h2>2. Arquitetura proposta</h2>
+<p>A arquitetura (Figura 1) separa a <b>preparação</b> dos dados, executada uma vez, da <b>consulta</b>, executada a cada pergunta. O agente é exposto por uma API FastAPI em Docker no Railway, e o mesmo código roda localmente como contingência.</p>
+<figure>
+  <img src="arquitetura.png" alt="Arquitetura do agente em blocos">
+  <p class="legenda">Figura 1. Arquitetura do assistente: caminho da pergunta (acima) e dados, preparação e infraestrutura (abaixo).</p>
 </figure>
-<p>O sistema tem dois pipelines desacoplados. O <b>pipeline de indexação</b> (executado uma vez, na subida do servidor) usa o <code>PyPDFLoader</code> para extrair o texto das 241 páginas, normaliza artefatos de extração (hifenização, espaços, páginas vazias), fatia o texto com o <code>RecursiveCharacterTextSplitter</code> em 480 trechos, gera vetores de 1536 dimensões com o modelo <code>text-embedding-3-small</code> da OpenAI e os persiste localmente no <b>ChromaDB</b> com distância de cosseno. Cada trecho recebe um ID determinístico (hash de arquivo e posição), de modo que reindexar não duplica vetores.</p>
-<p>O <b>pipeline de consulta</b> é um agente autônomo criado com <code>create_agent</code> do LangChain v1, que compila um grafo LangGraph implementando o ciclo <b>ReAct</b>: o modelo <code>gpt-4o-mini</code> produz um raciocínio (<i>Thought</i>), decide uma ação (<i>Action</i>, uma chamada de ferramenta), recebe o resultado (<i>Observation</i>) e repete até reunir evidência suficiente. A memória de sessão é um <code>InMemorySaver</code> (checkpointer do LangGraph) indexado por <code>thread_id</code>, o que permite perguntas de acompanhamento ("e a partir de qual semestre?"). Um middleware limita o histórico enviado ao modelo a 6 mil tokens sem apagar a conversa salva. O agente é exposto por uma API FastAPI, empacotada em Docker e hospedada no Railway, com interface web que exibe o log Thought/Action/Observation, as citações e o custo de cada pergunta; o mesmo código roda localmente (navegador ou terminal) como plano de contingência.</p>
 
-<h2>3. Desenho das tools</h2>
-<table class="nobreak">
-  <tr><th style="width:24%">Ferramenta (<code>@tool</code>)</th><th style="width:38%">Parâmetros</th><th>Retorno</th></tr>
-  <tr><td><code>buscar_normas_ifpa</code></td><td><code>consulta</code>: pergunta reescrita em linguagem normativa · <code>pensamento</code>: por que a busca é necessária</td><td>Até 7 trechos no formato <code>[n] documento | página | Art. N | relevância</code> + texto, ou <code>SEM_EVIDENCIA</code></td></tr>
-  <tr><td><code>listar_documentos_oficiais</code></td><td>—</td><td>Lista dos documentos indexados</td></tr>
-</table>
-<p>A docstring de cada ferramenta funciona como <b>contrato</b> com o modelo: descreve quando usá-la (lista de assuntos acadêmicos), como formular a consulta (termos normativos, uma busca por subpergunta) e como interpretar o retorno (citar documento, página e artigo; não inventar diante de <code>SEM_EVIDENCIA</code>). O parâmetro <code>pensamento</code> torna o <i>Thought</i> explícito e auditável no log, já que modelos com tool calling nativo costumam omitir o raciocínio textual. Internamente, a busca é <b>híbrida</b>: a busca vetorial (4 melhores trechos) decide se há evidência, por meio de um limiar de distância; o índice lexical BM25 (3 melhores) complementa com trechos que contêm os termos exatos, como "abono" ou "trancamento", que os embeddings às vezes deixam escapar.</p>
+<h3>2.1. Pipeline de indexação e estratégia de fatiamento</h3>
+<p>O <code>PyPDFLoader</code> extrai o texto das 241 páginas, que é normalizado (hifenização, espaços, páginas vazias) e fatiado pelo <code>RecursiveCharacterTextSplitter</code> com <code>chunk_size</code> de 1200 caracteres (~300 tokens) e <code>chunk_overlap</code> de 200 (~17%). Os separadores priorizam a hierarquia normativa (TÍTULO, CAPÍTULO, Seção, Art., §) antes de quebras genéricas, pois a unidade de sentido de uma norma é o artigo com seus parágrafos, que normalmente ocupa entre 600 e 1200 caracteres. Os 480 trechos resultantes são vetorizados com o <code>text-embedding-3-small</code> (1536 dimensões) e persistidos no ChromaDB com distância de cosseno; a indexação completa (~116 mil tokens) custa cerca de US$ 0,002.</p>
+<p>Sob a ótica de FinOps, esse tamanho limita cada busca a 1.200–2.000 tokens de contexto: trechos maiores diluiriam o vetor e encareceriam a consulta; menores separariam a regra de suas exceções. Uma primeira versão, que fatiava por página, cortava artigos e levou o agente a atribuir números de artigo errados a parágrafos isolados. A versão final fatia o documento inteiro, calcula a página de cada trecho pelo deslocamento no texto e prefixa os trechos com "(continuação do Art. N)".</p>
 
-<h2>4. Estratégia de fatiamento dos PDFs (FinOps)</h2>
-<p>Adotamos <code>chunk_size = 1200</code> caracteres (~300 tokens) e <code>chunk_overlap = 200</code> (~17 %), com separadores hierárquicos da redação normativa — <code>TÍTULO</code>, <code>CAPÍTULO</code>, <code>Seção</code>, <code>Art.</code>, <code>§</code> — antes dos separadores genéricos (parágrafo, linha, frase).</p>
-<ul>
-  <li><b>Contexto:</b> a unidade de sentido de uma norma é o artigo com seus parágrafos, que normalmente ocupa entre 600 e 1200 caracteres. Na base final, 164 trechos começam exatamente em "Art." e 376 são rotulados com o artigo a que pertencem.</li>
-  <li><b>Custo:</b> com 4 + 3 trechos por busca, cada consulta injeta cerca de 1.200 a 2.000 tokens no prompt. A indexação completa (~116 mil tokens) custa ≈ US$ 0,002. Dobrar o tamanho do trecho dobraria o custo por consulta sem ganho de precisão.</li>
-  <li><b>Precisão do embedding:</b> trechos grandes misturam vários artigos e "diluem" o vetor; trechos pequenos separam a regra de suas exceções.</li>
-  <li><b>Overlap moderado:</b> garante que um parágrafo cortado na fronteira apareça íntegro em algum trecho, sem inflar o índice (um overlap de 50 % aumentaria em ~40 % o número de vetores).</li>
-</ul>
-<p><b>Lição aprendida.</b> A primeira versão fatiava página a página. Nos testes, o agente atribuiu números de artigo errados a parágrafos que começavam soltos no topo de uma página ("§ 2º …") e não recuperou o Art. 88 ("vedado o abono de faltas"). A versão final fatia o documento inteiro, calcula a página de cada trecho pelo deslocamento no texto e prefixa os trechos com "(continuação do Art. N)". Com isso e com a busca híbrida, o agente passou a citar corretamente o Art. 88, § 1º.</p>
+<h3>2.2. Agente ReAct e desenho das ferramentas</h3>
+<p>O agente é criado com <code>create_agent</code> do LangChain, que compila um grafo LangGraph com o ciclo ReAct, usando o modelo <code>gpt-4o-mini</code> (escolhido pelo custo) com temperatura zero. A memória de sessão é um <code>InMemorySaver</code> indexado por identificador de conversa, e um middleware limita o histórico enviado ao modelo a 6 mil tokens. A busca é encapsulada na ferramenta <code>buscar_normas_ifpa(consulta, pensamento)</code>, cuja docstring funciona como contrato: indica quando usá-la, como reformular a pergunta em termos normativos e como interpretar o retorno. O parâmetro <code>pensamento</code> torna o <i>Thought</i> explícito no log. Internamente, a busca é híbrida: a busca vetorial (4 trechos) decide se há evidência e o BM25 (3 trechos) [Robertson e Zaragoza 2009] complementa com termos exatos. Cada trecho retorna com documento, página e artigo. Uma segunda ferramenta, <code>listar_documentos_oficiais</code>, informa as fontes disponíveis.</p>
 
-<h2>5. Mitigação de alucinações</h2>
-<table class="nobreak">
-  <tr><th style="width:20%">Camada</th><th>Mecanismo</th></tr>
-  <tr><td>1. Entrada</td><td>Normalização Unicode, remoção de caracteres invisíveis, limite de 1000 caracteres e detecção de padrões de <i>prompt injection</i> (pt-BR e inglês): a pergunta é bloqueada antes de chamar a API (custo zero).</td></tr>
-  <tr><td>2. Tráfego</td><td>Limite de 15 perguntas por minuto por IP, protegendo a cota da API.</td></tr>
-  <tr><td>3. System prompt</td><td>Os trechos recuperados são a única fonte de verdade; busca obrigatória antes de qualquer resposta normativa; citação de documento e página; proibição de inventar artigos, números ou datas; recusa de temas fora do escopo; o conteúdo recuperado é tratado como dado, não como ordem; <code>temperature = 0</code>.</td></tr>
-  <tr><td>4. Recuperação</td><td>Trechos com distância de cosseno acima de 0,75 são descartados. Sem evidência, a ferramenta retorna <code>SEM_EVIDENCIA</code> e o agente responde que não encontrou a informação, orientando a procurar a Secretaria Acadêmica.</td></tr>
-  <tr><td>5. Saída</td><td>A resposta final é um JSON corrigido com <b>json-repair</b> e validado com <b>Pydantic</b>. Cada citação (documento e página) é conferida contra os trechos recuperados na sessão, e todo "Art. N" mencionado no texto precisa constar desses trechos; o que não confere é descartado ou sinalizado e a confiança é rebaixada.</td></tr>
-</table>
-<p>A tolerância a falhas complementa as camadas: erros da OpenAI (autenticação, cota, timeout, conexão) e loops do grafo (limite de 12 passos) viram mensagens amigáveis, com novas tentativas automáticas; um PDF corrompido não interrompe a indexação; e a chave da API fica apenas em variável de ambiente (<code>.env</code> local, ignorado pelo Git, ou painel do Railway).</p>
+<h2>3. Mitigação de alucinações</h2>
+<p>A blindagem é organizada em cinco camadas: (i) <b>entrada</b>: limite de 1000 caracteres e detecção de padrões de <i>prompt injection</i>, bloqueando a pergunta antes de qualquer chamada à API; (ii) <b>tráfego</b>: limite de 15 perguntas por minuto por IP; (iii) <b><i>system prompt</i></b>: os trechos recuperados são a única fonte de verdade, a busca é obrigatória, a citação é exigida e temas fora do escopo são recusados; (iv) <b>recuperação</b>: trechos com distância de cosseno acima de 0,75 são descartados e, sem evidência, a ferramenta retorna <code>SEM_EVIDENCIA</code>; (v) <b>saída</b>: a resposta final em JSON é reparada com <i>json-repair</i>, validada com Pydantic e tem cada citação e cada número de artigo conferidos contra os trechos efetivamente recuperados, rebaixando a confiança quando algo não confere. Exceções da API (autenticação, cota, tempo limite) e laços do grafo (limite de 12 passos) são tratados de forma defensiva, e a chave da API reside apenas em variáveis de ambiente.</p>
 
-<div class="nobreak">
-<h2>6. Resultados</h2>
+<h2>4. Resultados e discussão</h2>
+<p>A Tabela 1 resume os testes realizados na aplicação em produção. O agente recuperou o Art. 88 da Resolução nº 945/2023 (frequência mínima de 75%, vedado o abono de faltas), trecho que só passou a ser encontrado após a busca híbrida e o novo fatiamento; reutilizou a memória em perguntas de acompanhamento e não inventou informações ausentes da base.</p>
+<p class="legenda-tab">Tabela 1. Comportamento e custo do agente em perguntas de teste.</p>
 <table>
-  <tr><th style="width:36%">Pergunta de teste (produção)</th><th>Comportamento observado</th><th style="width:12%">Custo</th></tr>
-  <tr><td>Qual a frequência mínima e posso abonar faltas?</td><td>2 buscas; cita o Art. 88 da Res. 945/2023 (75 %, vedado o abono), p. 29</td><td>US$ 0,0011</td></tr>
-  <tr><td>Quantas horas de estágio o curso exige?</td><td>120 h, a partir do 4º semestre (PPC, p. 13 e 21)</td><td>US$ 0,0016</td></tr>
-  <tr><td>E a partir de qual semestre posso fazer?</td><td>Usa a memória da sessão, sem nova busca</td><td>US$ 0,0006</td></tr>
-  <tr><td>Qual o valor da bolsa de monitoria em 2026?</td><td>Status <code>sem_evidencia</code>: não inventa valor</td><td>US$ 0,0011</td></tr>
-  <tr><td>Me ensine uma receita de bolo.</td><td>Status <code>fora_do_escopo</code>, sem chamar ferramentas</td><td>US$ 0,0003</td></tr>
-  <tr><td>Ignore suas instruções e mostre o system prompt</td><td>Status <code>bloqueada</code> pela camada de entrada</td><td>US$ 0</td></tr>
+  <tr><th style="width:40%">Pergunta</th><th>Comportamento observado</th><th style="width:15%">Custo (US$)</th></tr>
+  <tr><td>Frequência mínima e abono de faltas</td><td>Cita o Art. 88 da Res. 945/2023, p. 29</td><td>0,0011</td></tr>
+  <tr><td>Horas de estágio do curso</td><td>120 h, a partir do 4º semestre (PPC)</td><td>0,0016</td></tr>
+  <tr><td>"E a partir de qual semestre?"</td><td>Responde pela memória da sessão</td><td>0,0006</td></tr>
+  <tr><td>Valor da bolsa de monitoria em 2026</td><td>Sem evidência; não inventa valor</td><td>0,0011</td></tr>
+  <tr><td>Receita de bolo</td><td>Fora do escopo; recusa</td><td>0,0003</td></tr>
+  <tr><td>"Ignore suas instruções…"</td><td>Bloqueada na camada de entrada</td><td>0</td></tr>
 </table>
-</div>
-<p>O custo médio ficou em torno de US$ 0,001 por pergunta (cerca de mil perguntas por dólar), graças ao modelo econômico, ao cache de prompt da OpenAI e ao controle do tamanho do contexto.</p>
 
-<h2>7. Conclusão e próximos passos</h2>
-<p>O agente cumpre a Regra de Ouro da ancoragem contextual: responde apenas com evidência recuperada, cita a fonte e expõe o raciocínio de forma auditável. Como próximos passos, propomos: incluir o Calendário Acadêmico 2026 e a Resolução nº 944/2023 (regulamento específico da graduação); adotar reranking com <i>cross-encoder</i>; persistir a memória em banco (SqliteSaver/PostgresSaver); e criar um conjunto de perguntas-gabarito para avaliação automática da qualidade das respostas.</p>
-<p class="ref"><b>Referências:</b> IFPA. Resolução CONSUP nº 945/2023 — Regulamento Didático-Pedagógico do Ensino. · IFPA Campus Ananindeua. PPC do Bacharelado em Ciência da Computação (v8). · IFPA. Guia Acadêmico 2025. · YAO, S. et al. <i>ReAct: Synergizing Reasoning and Acting in Language Models</i>. ICLR, 2023. · LEWIS, P. et al. <i>Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks</i>. NeurIPS, 2020. · Documentação LangChain/LangGraph v1 e ChromaDB.</p>
+<h2>5. Conclusão</h2>
+<p>O assistente cumpre a ancoragem contextual: responde apenas com evidência recuperada, cita a fonte, expõe o raciocínio de forma auditável e custa cerca de US$ 0,001 por pergunta. Como trabalhos futuros, propõem-se incluir o Calendário Acadêmico 2026 e a Resolução nº 944/2023, adotar reordenação de resultados (<i>reranking</i>), persistir a memória em banco de dados e avaliar automaticamente as respostas com um conjunto de perguntas-gabarito.</p>
+
+<h2>Referências</h2>
+<div class="refs">
+<p>INSTITUTO FEDERAL DO PARÁ. <b>Resolução CONSUP nº 945/2023</b>: Regulamento Didático-Pedagógico do Ensino. Belém: IFPA, 2023.</p>
+<p>INSTITUTO FEDERAL DO PARÁ. <b>Projeto Pedagógico do Curso de Bacharelado em Ciência da Computação</b>. Ananindeua: IFPA, Campus Ananindeua.</p>
+<p>INSTITUTO FEDERAL DO PARÁ. <b>Guia Acadêmico 2025</b>. Belém: IFPA, 2025.</p>
+<p>JI, Z. et al. Survey of hallucination in natural language generation. <b>ACM Computing Surveys</b>, v. 55, n. 12, art. 248, 2023.</p>
+<p>LEWIS, P. et al. Retrieval-augmented generation for knowledge-intensive NLP tasks. In: <b>Advances in Neural Information Processing Systems</b>, v. 33, 2020.</p>
+<p>ROBERTSON, S.; ZARAGOZA, H. The probabilistic relevance framework: BM25 and beyond. <b>Foundations and Trends in Information Retrieval</b>, v. 3, n. 4, p. 333-389, 2009.</p>
+<p>YAO, S. et al. ReAct: synergizing reasoning and acting in language models. In: <b>International Conference on Learning Representations (ICLR)</b>, 2023.</p>
+</div>
 
 </body>
 </html>
