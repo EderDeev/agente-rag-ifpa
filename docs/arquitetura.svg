@@ -1,0 +1,111 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="3880" height="1170" viewBox="0 0 3880 1170" font-family="Inter, 'Segoe UI', Roboto, Arial, sans-serif">
+<defs>
+<marker id="seta" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M1 1 L11 6 L1 11" fill="none" stroke="#5D6B65" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></marker>
+</defs>
+<rect width="3880" height="1170" fill="#FFFFFF"/>
+<text x="120" y="105" font-size="52" font-weight="700" fill="#1C2421">Arquitetura do Agente RAG — Assistente Acadêmico IFPA</text>
+<text x="120" y="160" font-size="26" fill="#5D6B65">Linha de cima: o caminho de cada pergunta   ·   Linha de baixo: dados, preparação e infraestrutura</text>
+<line x1="690" y1="380.0" x2="880" y2="380.0" stroke="#5D6B65" stroke-width="4" marker-start="url(#seta)" marker-end="url(#seta)"/>
+<text x="785.0" y="364.0" font-size="22" fill="#5D6B65" text-anchor="middle">pergunta</text>
+<line x1="1460" y1="380.0" x2="1650" y2="380.0" stroke="#5D6B65" stroke-width="4" marker-start="url(#seta)" marker-end="url(#seta)"/>
+<line x1="2230" y1="380.0" x2="2420" y2="380.0" stroke="#5D6B65" stroke-width="4" marker-start="url(#seta)" marker-end="url(#seta)"/>
+<line x1="3000" y1="380.0" x2="3190" y2="380.0" stroke="#5D6B65" stroke-width="4" marker-start="url(#seta)" marker-end="url(#seta)"/>
+<text x="3095.0" y="364.0" font-size="22" fill="#5D6B65" text-anchor="middle">raciocínio</text>
+<line x1="690" y1="900.0" x2="880" y2="900.0" stroke="#5D6B65" stroke-width="4" marker-end="url(#seta)"/>
+<line x1="1460" y1="900.0" x2="1650" y2="900.0" stroke="#5D6B65" stroke-width="4" marker-end="url(#seta)"/>
+<text x="1555.0" y="884.0" font-size="22" fill="#5D6B65" text-anchor="middle">vetores</text>
+<line x1="2230" y1="900.0" x2="2420" y2="900.0" stroke="#5D6B65" stroke-width="4" marker-start="url(#seta)" marker-end="url(#seta)"/>
+<text x="2325.0" y="884.0" font-size="22" fill="#5D6B65" text-anchor="middle">trechos</text>
+<line x1="2710.0" y1="540" x2="2710.0" y2="740" stroke="#5D6B65" stroke-width="4" marker-start="url(#seta)" marker-end="url(#seta)"/>
+<text x="2726.0" y="648.0" font-size="22" fill="#5D6B65">consulta aos documentos</text>
+<rect x="120" y="230" width="560" height="300" rx="28" fill="#FFFFFF" stroke="#5D6B65" stroke-width="4"/>
+<text x="156" y="300" font-size="32" font-weight="700" fill="#5D6B65">Interface Web</text>
+<line x1="156" y1="328" x2="644" y2="328" stroke="#5D6B65" stroke-opacity="0.35" stroke-width="2"/>
+<circle cx="164" cy="372" r="5" fill="#5D6B65"/>
+<text x="182" y="380" font-size="23" fill="#1C2421">Chat no navegador ou celular (QR code)</text>
+<circle cx="164" cy="418" r="5" fill="#5D6B65"/>
+<text x="182" y="426" font-size="23" fill="#1C2421">Mostra resposta, fontes, raciocínio</text>
+<circle cx="164" cy="464" r="5" fill="#5D6B65"/>
+<text x="182" y="472" font-size="23" fill="#1C2421">e o custo de cada pergunta</text>
+<rect x="890" y="230" width="560" height="300" rx="28" fill="#FFFFFF" stroke="#5D6B65" stroke-width="4"/>
+<text x="926" y="300" font-size="32" font-weight="700" fill="#5D6B65">API — FastAPI</text>
+<line x1="926" y1="328" x2="1414" y2="328" stroke="#5D6B65" stroke-opacity="0.35" stroke-width="2"/>
+<circle cx="934" cy="372" r="5" fill="#5D6B65"/>
+<text x="952" y="380" font-size="23" fill="#1C2421">Recebe as perguntas dos alunos</text>
+<circle cx="934" cy="418" r="5" fill="#5D6B65"/>
+<text x="952" y="426" font-size="23" fill="#1C2421">Mantém a sessão de cada conversa</text>
+<circle cx="934" cy="464" r="5" fill="#5D6B65"/>
+<text x="952" y="472" font-size="23" fill="#1C2421">Devolve a resposta em JSON</text>
+<rect x="1660" y="230" width="560" height="300" rx="28" fill="#FDECEA" stroke="#B42318" stroke-width="4"/>
+<text x="1696" y="300" font-size="32" font-weight="700" fill="#B42318">Segurança (Blindagem)</text>
+<line x1="1696" y1="328" x2="2184" y2="328" stroke="#B42318" stroke-opacity="0.35" stroke-width="2"/>
+<circle cx="1704" cy="372" r="5" fill="#B42318"/>
+<text x="1722" y="380" font-size="23" fill="#1C2421">Barra prompt injection e abuso de uso</text>
+<circle cx="1704" cy="418" r="5" fill="#B42318"/>
+<text x="1722" y="426" font-size="23" fill="#1C2421">Confere as citações antes de responder</text>
+<circle cx="1704" cy="464" r="5" fill="#B42318"/>
+<text x="1722" y="472" font-size="23" fill="#1C2421">Chave da API só no ambiente (Railway)</text>
+<rect x="2430" y="230" width="560" height="300" rx="28" fill="#E6F2EA" stroke="#1B7F3B" stroke-width="4"/>
+<text x="2466" y="300" font-size="32" font-weight="700" fill="#1B7F3B">Agente ReAct — LangChain</text>
+<line x1="2466" y1="328" x2="2954" y2="328" stroke="#1B7F3B" stroke-opacity="0.35" stroke-width="2"/>
+<circle cx="2474" cy="372" r="5" fill="#1B7F3B"/>
+<text x="2492" y="380" font-size="23" fill="#1C2421">Ciclo Pensar → Agir → Observar</text>
+<circle cx="2474" cy="418" r="5" fill="#1B7F3B"/>
+<text x="2492" y="426" font-size="23" fill="#1C2421">Decide quando consultar os documentos</text>
+<circle cx="2474" cy="464" r="5" fill="#1B7F3B"/>
+<text x="2492" y="472" font-size="23" fill="#1C2421">Lembra o histórico da conversa</text>
+<rect x="3200" y="230" width="560" height="300" rx="28" fill="#E8F0FE" stroke="#3B5FC4" stroke-width="4"/>
+<text x="3236" y="300" font-size="32" font-weight="700" fill="#3B5FC4">Modelo de IA — OpenAI</text>
+<line x1="3236" y1="328" x2="3724" y2="328" stroke="#3B5FC4" stroke-opacity="0.35" stroke-width="2"/>
+<circle cx="3244" cy="372" r="5" fill="#3B5FC4"/>
+<text x="3262" y="380" font-size="23" fill="#1C2421">gpt-4o-mini (modelo econômico)</text>
+<circle cx="3244" cy="418" r="5" fill="#3B5FC4"/>
+<text x="3262" y="426" font-size="23" fill="#1C2421">Interpreta a pergunta</text>
+<circle cx="3244" cy="464" r="5" fill="#3B5FC4"/>
+<text x="3262" y="472" font-size="23" fill="#1C2421">Redige a resposta com base nos trechos</text>
+<rect x="120" y="750" width="560" height="300" rx="28" fill="#FFF4E0" stroke="#9A6200" stroke-width="4"/>
+<text x="156" y="820" font-size="32" font-weight="700" fill="#9A6200">Documentos Oficiais IFPA</text>
+<line x1="156" y1="848" x2="644" y2="848" stroke="#9A6200" stroke-opacity="0.35" stroke-width="2"/>
+<circle cx="164" cy="892" r="5" fill="#9A6200"/>
+<text x="182" y="900" font-size="23" fill="#1C2421">Regulamento Didático (Res. 945/2023)</text>
+<circle cx="164" cy="938" r="5" fill="#9A6200"/>
+<text x="182" y="946" font-size="23" fill="#1C2421">PPC de Ciência da Computação</text>
+<circle cx="164" cy="984" r="5" fill="#9A6200"/>
+<text x="182" y="992" font-size="23" fill="#1C2421">Guia Acadêmico 2025 (PDFs)</text>
+<rect x="890" y="750" width="560" height="300" rx="28" fill="#E8F0FE" stroke="#3B5FC4" stroke-width="4"/>
+<text x="926" y="820" font-size="32" font-weight="700" fill="#3B5FC4">Indexação (preparação)</text>
+<line x1="926" y1="848" x2="1414" y2="848" stroke="#3B5FC4" stroke-opacity="0.35" stroke-width="2"/>
+<circle cx="934" cy="892" r="5" fill="#3B5FC4"/>
+<text x="952" y="900" font-size="23" fill="#1C2421">Lê os PDFs (PyPDFLoader)</text>
+<circle cx="934" cy="938" r="5" fill="#3B5FC4"/>
+<text x="952" y="946" font-size="23" fill="#1C2421">Divide o texto em trechos por artigo</text>
+<circle cx="934" cy="984" r="5" fill="#3B5FC4"/>
+<text x="952" y="992" font-size="23" fill="#1C2421">Gera os embeddings (OpenAI)</text>
+<rect x="1660" y="750" width="560" height="300" rx="28" fill="#FFF4E0" stroke="#9A6200" stroke-width="4"/>
+<text x="1696" y="820" font-size="32" font-weight="700" fill="#9A6200">Banco Vetorial — ChromaDB</text>
+<line x1="1696" y1="848" x2="2184" y2="848" stroke="#9A6200" stroke-opacity="0.35" stroke-width="2"/>
+<circle cx="1704" cy="892" r="5" fill="#9A6200"/>
+<text x="1722" y="900" font-size="23" fill="#1C2421">Armazena os trechos dos documentos</text>
+<circle cx="1704" cy="938" r="5" fill="#9A6200"/>
+<text x="1722" y="946" font-size="23" fill="#1C2421">Guarda os vetores (embeddings)</text>
+<circle cx="1704" cy="984" r="5" fill="#9A6200"/>
+<text x="1722" y="992" font-size="23" fill="#1C2421">Encontra trechos parecidos</text>
+<rect x="2430" y="750" width="560" height="300" rx="28" fill="#E6F2EA" stroke="#1B7F3B" stroke-width="4"/>
+<text x="2466" y="820" font-size="32" font-weight="700" fill="#1B7F3B">Ferramenta de Busca (RAG)</text>
+<line x1="2466" y1="848" x2="2954" y2="848" stroke="#1B7F3B" stroke-opacity="0.35" stroke-width="2"/>
+<circle cx="2474" cy="892" r="5" fill="#1B7F3B"/>
+<text x="2492" y="900" font-size="23" fill="#1C2421">Busca por significado e palavra-chave</text>
+<circle cx="2474" cy="938" r="5" fill="#1B7F3B"/>
+<text x="2492" y="946" font-size="23" fill="#1C2421">Devolve trechos com documento e página</text>
+<circle cx="2474" cy="984" r="5" fill="#1B7F3B"/>
+<text x="2492" y="992" font-size="23" fill="#1C2421">Sem trecho relevante: avisa o agente</text>
+<rect x="3200" y="750" width="560" height="300" rx="28" fill="#F2F4F7" stroke="#475467" stroke-width="4" stroke-dasharray="18 12"/>
+<text x="3236" y="820" font-size="32" font-weight="700" fill="#475467">Infraestrutura</text>
+<line x1="3236" y1="848" x2="3724" y2="848" stroke="#475467" stroke-opacity="0.35" stroke-width="2"/>
+<circle cx="3244" cy="892" r="5" fill="#475467"/>
+<text x="3262" y="900" font-size="23" fill="#1C2421">Docker no Railway, deploy a cada push</text>
+<circle cx="3244" cy="938" r="5" fill="#475467"/>
+<text x="3262" y="946" font-size="23" fill="#1C2421">Código no GitHub, sem chaves expostas</text>
+<circle cx="3244" cy="984" r="5" fill="#475467"/>
+<text x="3262" y="992" font-size="23" fill="#1C2421">Plano B: roda local (web ou terminal)</text>
+</svg>
