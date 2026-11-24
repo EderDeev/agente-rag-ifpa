@@ -10,7 +10,7 @@ StatusResposta = Literal["respondida", "sem_evidencia", "fora_do_escopo", "bloqu
 
 
 class Citacao(BaseModel):
-    documento: str = Field(..., description="Nome do documento oficial do IFPA")
+    documento: str = Field(..., description="Nome do documento de onde veio o trecho")
     pagina: int | None = Field(None, description="Página do PDF onde o trecho aparece")
     trecho: str = Field("", description="Trecho literal curto que fundamenta a resposta")
 
@@ -50,9 +50,27 @@ class Custo(BaseModel):
     cotacao_usd_brl: float
 
 
+ID_PATTERN = r"^[A-Za-z0-9_-]+$"
+
+
 class PerguntaIn(BaseModel):
     pergunta: str = Field(..., min_length=1)
-    sessao_id: str = Field(..., min_length=8, max_length=64, pattern=r"^[A-Za-z0-9_-]+$")
+    sessao_id: str = Field(..., min_length=8, max_length=64, pattern=ID_PATTERN)
+    # Espaço de documentos do usuário (fica igual entre conversas no mesmo navegador).
+    espaco_id: str | None = Field(None, min_length=8, max_length=64, pattern=ID_PATTERN)
+
+
+class DocumentoOut(BaseModel):
+    documento: str
+    arquivo: str
+    exemplo: bool = False
+    trechos: int = 0
+
+
+class DocumentosOut(BaseModel):
+    espaco_id: str
+    documentos: list[DocumentoOut] = Field(default_factory=list)
+    mensagem: str = ""
 
 
 class RespostaOut(RespostaAgente):

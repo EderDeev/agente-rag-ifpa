@@ -26,12 +26,13 @@ def main() -> None:
         sys.stdout.reconfigure(encoding="utf-8")
 
     if not indice_existe():
-        print("Índice não encontrado. Indexando PDFs...")
+        print("Índice não encontrado. Indexando os documentos de exemplo...")
         construir_indice()
 
     sessao = uuid.uuid4().hex
     total_usd = 0.0
-    print(f"{NEGRITO}Assistente Acadêmico IFPA{RESET} — sessão {sessao[:8]} (digite 'sair' para encerrar)\n")
+    print(f"{NEGRITO}Converse com os seus documentos{RESET} — sessão {sessao[:8]} (digite 'sair' para encerrar)")
+    print("Usando os documentos de data/pdfs/ (para enviar os seus, use a interface web).\n")
 
     while True:
         try:

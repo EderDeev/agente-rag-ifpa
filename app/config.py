@@ -72,10 +72,19 @@ class Settings:
         f"https://{os.environ['RAILWAY_PUBLIC_DOMAIN']}" if os.getenv("RAILWAY_PUBLIC_DOMAIN") else ""
     )
 
+    # --- Upload de documentos pelo usuário ---
+    max_upload_mb: int = _int("MAX_UPLOAD_MB", 15)
+    max_upload_paginas: int = _int("MAX_UPLOAD_PAGINAS", 200)
+    max_documentos_por_espaco: int = _int("MAX_DOCUMENTOS_POR_ESPACO", 5)
+    rate_limit_upload_por_minuto: int = _int("RATE_LIMIT_UPLOAD_PER_MINUTE", 6)
+    # Se verdadeiro, os documentos de exemplo (data/pdfs) também entram nas buscas de todos.
+    incluir_exemplos: bool = os.getenv("INCLUIR_DOCUMENTOS_EXEMPLO", "true").strip().lower() in {"1", "true", "sim", "yes"}
+
     # --- Caminhos ---
     pdf_dir: Path = Path(os.getenv("PDF_DIR", BASE_DIR / "data" / "pdfs"))
+    upload_dir: Path = Path(os.getenv("UPLOAD_DIR", BASE_DIR / "data" / "uploads"))
     chroma_dir: Path = Path(os.getenv("CHROMA_DIR", BASE_DIR / "chroma_db"))
-    collection_name: str = os.getenv("CHROMA_COLLECTION", "normas_ifpa")
+    collection_name: str = os.getenv("CHROMA_COLLECTION", "documentos")
 
 
 settings = Settings()

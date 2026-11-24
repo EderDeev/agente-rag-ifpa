@@ -3,21 +3,21 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Assistente Acadêmico IFPA</title>
+<title>Converse com os seus documentos</title>
 <link rel="icon" href="/favicon.ico" sizes="48x48">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-<meta name="theme-color" content="#1b7f3b">
+<meta name="theme-color" content="#2f5bff">
 <style>
   :root {
-    --bg: #f4f6f4; --card: #ffffff; --ink: #1c2421; --muted: #5d6b65; --line: #dde3df;
-    --brand: #1b7f3b; --brand-ink: #ffffff; --user: #e6f2ea;
+    --bg: #f2f4f8; --card: #ffffff; --ink: #0b1530; --muted: #4a5571; --line: #dce1ea;
+    --brand: #2f5bff; --brand-ink: #ffffff; --user: #e7edff; --mark: #e4ff3a;
     --thought: #0e6b8a; --action: #9a6200; --obs: #6b7280; --warn: #b42318;
   }
   @media (prefers-color-scheme: dark) {
     :root {
-      --bg: #111614; --card: #1a201d; --ink: #e8eeea; --muted: #9aa8a1; --line: #2b3430;
-      --brand: #2fa155; --brand-ink: #ffffff; --user: #1f3327;
+      --bg: #0d1220; --card: #151c2e; --ink: #e8ecf5; --muted: #a2acc2; --line: #273049;
+      --brand: #6b8cff; --brand-ink: #0b1530; --user: #1c2647; --mark: #e4ff3a;
       --thought: #5cc1e0; --action: #e0ae4f; --obs: #9ca3af; --warn: #f97066;
     }
   }
@@ -69,6 +69,22 @@
   .sugs { display: flex; flex-wrap: wrap; gap: 8px; }
   .sugs button { background: var(--card); border: 1px solid var(--line); color: var(--ink); border-radius: 999px; padding: 6px 12px; font: inherit; font-size: 13px; cursor: pointer; }
   .typing { color: var(--muted); font-style: italic; }
+  .docs { padding: 12px 0; border-bottom: 1px solid var(--line); display: flex; flex-direction: column; gap: 8px; }
+  .docs-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  .docs-top b { font-size: 13px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: .04em; }
+  .docs-top small { display: block; font-size: 12px; color: var(--muted); text-transform: none; letter-spacing: 0; font-weight: 400; }
+  .btn-up { background: var(--brand); color: var(--brand-ink); border: 0; border-radius: 10px; padding: 10px 14px; font: inherit; font-weight: 600; cursor: pointer; min-height: 44px; }
+  .btn-up:disabled { opacity: .5; cursor: wait; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chip { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; padding: 4px 6px 4px 10px; border-radius: 999px; border: 1px solid var(--line); background: var(--card); max-width: 100%; }
+  .chip span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .chip.meu { border-color: var(--brand); }
+  .chip.ex { color: var(--muted); }
+  .chip button { border: 0; background: none; color: var(--muted); cursor: pointer; font-size: 16px; line-height: 1; padding: 2px 6px; border-radius: 999px; }
+  .chip button:hover { color: var(--warn); }
+  .docs-msg { font-size: 13px; color: var(--muted); min-height: 1em; }
+  .docs-msg.erro { color: var(--warn); }
+  .wrap.arrastando { outline: 3px dashed var(--brand); outline-offset: -6px; border-radius: 12px; }
 </style>
 </head>
 <body>
@@ -76,26 +92,38 @@
 <div class="wrap">
   <header>
     <div>
-      <h1>Assistente Acadêmico IFPA</h1>
-      <p>Campus Ananindeua · respostas ancoradas nos documentos oficiais</p>
+      <h1>Converse com os seus documentos</h1>
+      <p>Agente RAG · respostas só com base nos documentos, sempre citando a fonte</p>
     </div>
     <button id="nova" type="button">Nova conversa</button>
   </header>
 
+  <section class="docs" aria-label="Seus documentos">
+    <div class="docs-top">
+      <b>Seus documentos<small>PDF, TXT ou MD · você também pode arrastar o arquivo para cá</small></b>
+      <button class="btn-up" id="btn-up" type="button">+ Enviar documento</button>
+      <input type="file" id="arquivo" accept=".pdf,.txt,.md,application/pdf,text/plain,text/markdown" hidden>
+    </div>
+    <div class="chips" id="chips"></div>
+    <div class="docs-msg" id="docs-msg" role="status"></div>
+  </section>
+
   <main id="chat" aria-live="polite">
     <div class="msg bot">
-      <div class="txt">Olá! Tiro dúvidas sobre o Regulamento Didático-Pedagógico (Resolução nº 945/2023), o PPC de Ciência da Computação e o Guia Acadêmico 2025. Toda resposta vem com a fonte citada e o custo da consulta.</div>
+      <div class="txt">Olá! Envie uma apostila, um contrato, um relatório ou um artigo e pergunte o que quiser sobre ele. Eu respondo só com base nos documentos, mostrando o trecho e a página de onde tirei cada informação (e o custo de cada consulta).
+
+Ainda não tem um arquivo? Teste com os documentos de exemplo do IFPA que já estão carregados.</div>
       <div class="sugs" style="margin-top:10px">
-        <button>Qual a frequência mínima para ser aprovado?</button>
-        <button>Como é calculada a média final na graduação?</button>
-        <button>Posso trancar a matrícula no primeiro semestre?</button>
-        <button>Quantas horas de estágio o curso exige?</button>
+        <button>Quais documentos você conhece?</button>
+        <button>Quais são os principais pontos do documento que enviei?</button>
+        <button>Qual a frequência mínima para ser aprovado no IFPA?</button>
+        <button>Quantas horas de estágio o curso de Ciência da Computação exige?</button>
       </div>
     </div>
   </main>
 
   <form id="f">
-    <textarea id="q" placeholder="Digite sua dúvida acadêmica..." maxlength="1000" required></textarea>
+    <textarea id="q" placeholder="Pergunte algo sobre os seus documentos..." maxlength="1000" required></textarea>
     <button id="b" type="submit">Enviar</button>
   </form>
 </div>
@@ -103,7 +131,7 @@
 <aside aria-label="Acesso e custos">
   <div class="painel qr">
     <h2>Acesse pelo celular</h2>
-    <img src="/qr.svg" alt="QR code para abrir o Assistente Acadêmico IFPA" width="220" height="220">
+    <img src="/qr.svg" alt="QR code para abrir o Converse com os seus documentos" width="220" height="220">
     <p>Aponte a câmera ou acesse<br><a id="url" href="/">carregando...</a></p>
   </div>
   <div class="painel">
@@ -127,6 +155,17 @@ function novaSessao() {
 let sessao;
 try { sessao = sessionStorage.getItem('sessao_id'); } catch (_) {}
 if (!sessao) sessao = novaSessao();
+
+// Espaço de documentos: continua o mesmo ao clicar em "Nova conversa" e ao recarregar a página.
+function gerarId() {
+  return (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + String(Math.random()).slice(2)).replace(/[^A-Za-z0-9]/g, '');
+}
+let espaco;
+try { espaco = localStorage.getItem('espaco_id'); } catch (_) {}
+if (!espaco || !/^[A-Za-z0-9_-]{8,64}$/.test(espaco)) {
+  espaco = gerarId();
+  try { localStorage.setItem('espaco_id', espaco); } catch (_) {}
+}
 
 function el(tag, cls, text) {
   const e = document.createElement(tag);
@@ -195,7 +234,7 @@ function renderResposta(r) {
 
 async function enviar(texto) {
   chat.append(el('div', 'msg user', texto));
-  const typing = el('div', 'msg bot typing', 'Consultando documentos oficiais...');
+  const typing = el('div', 'msg bot typing', 'Consultando seus documentos...');
   chat.append(typing);
   chat.scrollTop = chat.scrollHeight;
   btn.disabled = true;
@@ -203,7 +242,7 @@ async function enviar(texto) {
     const resp = await fetch('/api/chat', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ pergunta: texto, sessao_id: sessao }),
+      body: JSON.stringify({ pergunta: texto, sessao_id: sessao, espaco_id: espaco }),
     });
     const dados = await resp.json().catch(() => ({}));
     typing.remove();
@@ -237,6 +276,94 @@ fetch('/api/info').then(r => r.json()).then(i => {
   const a = document.getElementById('url');
   a.href = i.url; a.textContent = i.url.replace(/^https?:\/\//, '');
 }).catch(() => {});
+
+// ---------------- Documentos ----------------
+const chips = document.getElementById('chips');
+const docsMsg = document.getElementById('docs-msg');
+const btnUp = document.getElementById('btn-up');
+const inputArq = document.getElementById('arquivo');
+let limites = { extensoes: ['.md', '.pdf', '.txt'], max_mb: 15 };
+
+function avisoDocs(texto, erro) {
+  docsMsg.textContent = texto || '';
+  docsMsg.className = 'docs-msg' + (erro ? ' erro' : '');
+}
+
+function pintarDocs(lista) {
+  chips.replaceChildren();
+  const meus = lista.filter(d => !d.exemplo), exemplos = lista.filter(d => d.exemplo);
+  for (const d of meus) {
+    const c = el('span', 'chip meu');
+    c.append(el('span', '', d.documento));
+    const x = el('button', '', '×');
+    x.type = 'button';
+    x.title = 'Remover ' + d.documento;
+    x.setAttribute('aria-label', 'Remover ' + d.documento);
+    x.addEventListener('click', () => removerDoc(d));
+    c.append(x);
+    chips.append(c);
+  }
+  for (const d of exemplos) {
+    const c = el('span', 'chip ex');
+    c.title = 'Documento de exemplo';
+    c.append(el('span', '', 'Exemplo: ' + d.documento));
+    chips.append(c);
+  }
+  if (!lista.length) chips.append(el('span', 'docs-msg', 'Nenhum documento ainda. Envie o primeiro!'));
+}
+
+async function chamarDocs(metodo, corpo, params) {
+  const url = '/api/documentos' + (params ? '?' + new URLSearchParams(params) : '');
+  const resp = await fetch(url, { method: metodo, body: corpo });
+  const dados = await resp.json().catch(() => ({}));
+  if (!resp.ok) throw new Error(dados.detail || ('Erro ' + resp.status));
+  return dados;
+}
+
+async function carregarDocs() {
+  try { pintarDocs((await chamarDocs('GET', null, { espaco_id: espaco })).documentos); }
+  catch (e) { avisoDocs('Não consegui carregar a lista de documentos: ' + e.message, true); }
+}
+
+async function enviarArquivo(arq) {
+  if (!arq) return;
+  const ext = '.' + (arq.name.split('.').pop() || '').toLowerCase();
+  if (!limites.extensoes.includes(ext)) return avisoDocs('Formato não suportado. Envie PDF, TXT ou MD.', true);
+  if (arq.size > limites.max_mb * 1024 * 1024) return avisoDocs('O arquivo passa de ' + limites.max_mb + ' MB.', true);
+  const fd = new FormData();
+  fd.append('espaco_id', espaco);
+  fd.append('arquivo', arq);
+  btnUp.disabled = true;
+  avisoDocs('Lendo “' + arq.name + '” e gerando os embeddings... isso leva alguns segundos.');
+  try {
+    const dados = await chamarDocs('POST', fd);
+    pintarDocs(dados.documentos);
+    avisoDocs(dados.mensagem);
+  } catch (e) {
+    avisoDocs(e.message, true);
+  } finally {
+    btnUp.disabled = false;
+    inputArq.value = '';
+  }
+}
+
+async function removerDoc(d) {
+  if (!confirm('Remover “' + d.documento + '”?')) return;
+  try {
+    const dados = await chamarDocs('DELETE', null, { espaco_id: espaco, arquivo: d.arquivo });
+    pintarDocs(dados.documentos);
+    avisoDocs(dados.mensagem);
+  } catch (e) { avisoDocs(e.message, true); }
+}
+
+btnUp.addEventListener('click', () => inputArq.click());
+inputArq.addEventListener('change', () => enviarArquivo(inputArq.files[0]));
+const areaDrop = document.querySelector('.wrap');
+['dragenter', 'dragover'].forEach(ev => areaDrop.addEventListener(ev, (e) => { e.preventDefault(); areaDrop.classList.add('arrastando'); }));
+['dragleave', 'drop'].forEach(ev => areaDrop.addEventListener(ev, (e) => { e.preventDefault(); areaDrop.classList.remove('arrastando'); }));
+areaDrop.addEventListener('drop', (e) => enviarArquivo(e.dataTransfer && e.dataTransfer.files[0]));
+fetch('/api/info').then(r => r.json()).then(i => { if (i.upload) limites = i.upload; }).catch(() => {});
+carregarDocs();
 
 document.getElementById('nova').addEventListener('click', () => {
   sessao = novaSessao();

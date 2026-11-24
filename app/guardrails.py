@@ -74,8 +74,8 @@ def validar_pergunta(pergunta: str) -> ResultadoValidacao:
             False,
             texto,
             "Sua mensagem contém instruções para alterar o comportamento do assistente. "
-            "Sou um assistente acadêmico do IFPA e só respondo dúvidas sobre normas, "
-            "curso e calendário com base nos documentos oficiais.",
+            "Eu só respondo perguntas sobre o conteúdo dos seus documentos, "
+            "sempre citando a fonte.",
         )
     return ResultadoValidacao(True, texto)
 

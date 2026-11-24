@@ -76,7 +76,7 @@ def calcular_custo(mensagens_do_turno: list[BaseMessage]) -> Custo:
             saida += uso.get("output_tokens", 0)
             cache += (uso.get("input_token_details") or {}).get("cache_read", 0) or 0
         for call in msg.tool_calls or []:
-            if call.get("name") == "buscar_normas_ifpa":
+            if call.get("name") == "buscar_documentos":
                 tokens_embedding += contar_tokens(str((call.get("args") or {}).get("consulta", "")))
 
     p_in, p_cache, p_out = _preco_llm(settings.chat_model)

@@ -17,3 +17,6 @@ chroma_db/
 Thumbs.db
 .vscode/
 .idea/
+
+# Documentos enviados pelos usuários (recriados a cada sessão)
+data/uploads/

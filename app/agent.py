@@ -1,7 +1,7 @@
 """Agente autônomo ReAct (Thought -> Action -> Observation) com LangChain/LangGraph.
 
 - Modelo: ChatOpenAI (gpt-4o-mini por padrão, configurável)
-- Ferramentas: buscar_normas_ifpa, listar_documentos_oficiais
+- Ferramentas: buscar_documentos, listar_documentos (filtradas pelo espaço do usuário)
 - Memória de sessão: InMemorySaver (checkpointer do LangGraph), uma thread por sessao_id
 - Saída: JSON reparado com json-repair e validado com Pydantic
 """
@@ -168,7 +168,7 @@ def verificar_citacoes(resp: RespostaAgente, observacoes: list[str]) -> list[str
         avisos.append("Resposta gerada sem consulta à base documental.")
     elif not verificadas:
         resp.confianca = "baixa"
-        avisos.append("Nenhuma citação verificável: confira a informação na Secretaria Acadêmica.")
+        avisos.append("Nenhuma citação verificável: confira a informação no documento original.")
 
     # Números de artigo mencionados no texto precisam existir nos trechos recuperados.
     recuperados = {int(n) for obs in observacoes for n in RE_ARTIGO_CITADO.findall(obs)}
@@ -190,13 +190,18 @@ def _erro(sessao_id: str, mensagem: str, status: str = "erro") -> RespostaOut:
     return RespostaOut(sessao_id=sessao_id, resposta=mensagem, status=status, confianca="baixa", custo=custo)
 
 
-def perguntar(pergunta: str, sessao_id: str) -> RespostaOut:
+def perguntar(pergunta: str, sessao_id: str, espaco_id: str | None = None) -> RespostaOut:
     validacao = validar_pergunta(pergunta)
     if not validacao.ok:
         log.info("[%s] entrada bloqueada: %s", sessao_id, validacao.motivo)
         return _erro(sessao_id, validacao.motivo, status="bloqueada")
 
-    config = {"configurable": {"thread_id": sessao_id}, "recursion_limit": settings.recursion_limit}
+    # thread_id = memória da conversa; espaco_id = quais documentos enviados esta pessoa pode consultar.
+    # O espaço vai pelo config (e não pela pergunta), então o modelo não consegue trocá-lo.
+    config = {
+        "configurable": {"thread_id": sessao_id, "espaco_id": espaco_id or ""},
+        "recursion_limit": settings.recursion_limit,
+    }
 
     try:
         agente = construir_agente()

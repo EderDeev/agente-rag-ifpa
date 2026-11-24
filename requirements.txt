@@ -21,5 +21,6 @@ tiktoken>=0.7      # contagem de tokens para o custo de embedding
 # --- API web ---
 fastapi>=0.115
 uvicorn[standard]>=0.30
+python-multipart>=0.0.9  # upload de arquivos (multipart/form-data)
 python-dotenv>=1.0
 segno>=1.6         # QR code da página
